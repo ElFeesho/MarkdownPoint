@@ -8,5 +8,5 @@ project("MarkdownPoint" CXX)
 add_subdirectory(markdownpoint)
 add_subdirectory(app)
 
-target_compile_features(libmarkdownpoint PRIVATE cxx_lambdas)
+target_compile_features(libmarkdownpoint PRIVATE cxx_lambdas cxx_range_for)
 target_compile_features(markdownpoint PRIVATE cxx_lambdas)
