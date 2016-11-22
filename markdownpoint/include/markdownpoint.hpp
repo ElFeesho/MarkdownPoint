@@ -57,7 +57,20 @@ namespace MarkdownPoint {
         std::vector<std::string> split(const std::string &rawInput, const std::string &delimeter);
     };
 
+    class Renderer {
+    public:
+        virtual ~Renderer(){}
+        virtual void renderPage(Slide *slide) = 0;
+        virtual void renderHeading(Heading *heading) = 0;
+    };
 
+    class PresentationRenderer {
+    public:
+        PresentationRenderer(Renderer* renderer);
+        void render(Presentation &p);
+    private:
+        Renderer *_renderer;
+    };
 }
 
 #endif

@@ -90,4 +90,20 @@ namespace MarkdownPoint
 
         return tokenisedResult;
     }
+
+    PresentationRenderer::PresentationRenderer(Renderer *renderer) : _renderer(renderer) {
+
+    }
+
+    void PresentationRenderer::render(Presentation &p) {
+        for (uint32_t i = 0; i < p.slideCount(); i++)
+        {
+            Slide *slide = p.slide(i);
+            _renderer->renderPage(slide);
+            for (uint32_t k = 0; k < slide->blockCount(); k++)
+            {
+                _renderer->renderHeading(dynamic_cast<Heading *>(slide->block(k)));
+            }
+        }
+    }
 }
