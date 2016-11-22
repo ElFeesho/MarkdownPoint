@@ -33,3 +33,15 @@ TEST(markdown_parsing, can_parse_a_heading) {
     EXPECT_EQ(heading->size(), 1);
     EXPECT_EQ(heading->text(), "Heading");
 }
+
+TEST(markdown_parsing, can_parse_a_paragraph) {
+    MarkdownPoint::MarkdownPresentationParser p;
+    MarkdownPoint::Presentation presentation = p.parse("Paragraph text is boring");
+
+    MarkdownPoint::Slide *slide = presentation.slide(0);
+    EXPECT_EQ(slide->blockCount(), 1);
+    EXPECT_EQ(slide->block(0)->type(), "paragraph");
+
+    MarkdownPoint::Paragraph *paragraph = dynamic_cast<MarkdownPoint::Paragraph *>(slide->block(0));
+    EXPECT_EQ(paragraph->text(), "Paragraph text is boring");
+}

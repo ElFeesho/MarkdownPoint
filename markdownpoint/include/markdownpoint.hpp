@@ -23,6 +23,15 @@ namespace MarkdownPoint {
         uint32_t _size;
     };
 
+    class Paragraph : public Block {
+    public:
+        Paragraph(const std::string &text);
+        std::string type();
+        std::string text();
+    private:
+        std::string _text;
+    };
+
     class Slide {
     public:
         Slide();
@@ -62,6 +71,7 @@ namespace MarkdownPoint {
         virtual ~Renderer(){}
         virtual void renderPage(Slide *slide) = 0;
         virtual void renderHeading(Heading *heading) = 0;
+        virtual void renderParagraph(Paragraph *paragraph) = 0;
     };
 
     class PresentationRenderer {

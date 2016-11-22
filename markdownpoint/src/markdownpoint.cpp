@@ -21,6 +21,17 @@ namespace MarkdownPoint
         return _text;
     }
 
+    Paragraph::Paragraph(const std::string &text) : _text(text) {
+    }
+
+    std::string Paragraph::type() {
+        return "paragraph";
+    }
+
+    std::string Paragraph::text() {
+        return _text;
+    }
+
 	Slide::Slide() {
 
 	}
@@ -33,10 +44,10 @@ namespace MarkdownPoint
 		return _blocks.size();
 	}
 
+
     void Slide::addBlock(Block *block) {
         _blocks.push_back(block);
     }
-
 
     Presentation::Presentation() {
 	}
@@ -66,6 +77,9 @@ namespace MarkdownPoint
 
             if (slideString.substr(0, 2) == "# ") {
                 slide->addBlock(new MarkdownPoint::Heading(slideString.substr(2), 1));
+            }
+            else {
+                slide->addBlock(new MarkdownPoint::Paragraph(slideString));
             }
         }
 
@@ -102,7 +116,14 @@ namespace MarkdownPoint
             _renderer->renderPage(slide);
             for (uint32_t k = 0; k < slide->blockCount(); k++)
             {
-                _renderer->renderHeading(dynamic_cast<Heading *>(slide->block(k)));
+                Block *block = slide->block(k);
+                if(block->type() == "heading") {
+                    _renderer->renderHeading(dynamic_cast<Heading *>(block));
+                }
+                else if(block->type() == "paragraph")
+                {
+                    _renderer->renderParagraph(dynamic_cast<Paragraph *>(block));
+                }
             }
         }
     }

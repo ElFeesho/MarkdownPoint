@@ -21,8 +21,13 @@ public:
         renderHeadingCalled = true;
     }
 
+    void renderParagraph(MarkdownPoint::Paragraph *paragraph) {
+        renderParagraphCalled = true;
+    }
+
     bool renderPageCalled;
     bool renderHeadingCalled;
+    bool renderParagraphCalled;
 };
 
 TEST(presentation_renderer, will_delegate_creation_of_slide) {
@@ -52,3 +57,16 @@ TEST(presentation_renderer, will_render_a_header) {
     EXPECT_EQ(spyRenderer->renderHeadingCalled, true);
 }
 
+TEST(presentation_renderer, will_render_a_paragraph){
+    SpyRenderer *spyRenderer = new SpyRenderer();
+
+    MarkdownPoint::PresentationRenderer renderer(spyRenderer);
+
+    MarkdownPoint::Presentation presentation;
+    MarkdownPoint::Slide *slide = presentation.addSlide();
+    slide->addBlock(new MarkdownPoint::Paragraph("Expected Header"));
+
+    renderer.render(presentation);
+
+    EXPECT_EQ(spyRenderer->renderParagraphCalled, true);
+}
