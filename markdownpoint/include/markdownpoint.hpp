@@ -16,7 +16,10 @@ namespace MarkdownPoint {
     public:
         Heading(const std::string &text, int size = 1);
         virtual std::string type();
+        uint32_t size();
+        std::string text();
     private:
+        std::string _text;
         int _size;
     };
 
@@ -24,6 +27,7 @@ namespace MarkdownPoint {
     public:
         Slide();
 
+        void addBlock(Block *block);
         Block *block(uint32_t idx);
         ssize_t blockCount();
     private:
@@ -38,6 +42,7 @@ namespace MarkdownPoint {
 
         Slide *addSlide();
 
+        Slide *slide(uint32_t idx);
     private:
         std::vector<Slide *> _slides;
     };
