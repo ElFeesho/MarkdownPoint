@@ -45,3 +45,21 @@ TEST(markdown_parsing, can_parse_a_paragraph) {
     MarkdownPoint::Paragraph *paragraph = dynamic_cast<MarkdownPoint::Paragraph *>(slide->block(0));
     EXPECT_EQ(paragraph->text(), "Paragraph text is boring");
 }
+
+
+TEST(markdown_parsing, can_parse_a_paragraph_and_heading) {
+    MarkdownPoint::MarkdownPresentationParser p;
+    MarkdownPoint::Presentation presentation = p.parse("# Heading\nParagraph text is boring");
+
+    MarkdownPoint::Slide *slide = presentation.slide(0);
+    EXPECT_EQ(slide->blockCount(), 2);
+    EXPECT_EQ(slide->block(0)->type(), "heading");
+
+    MarkdownPoint::Heading *heading = dynamic_cast<MarkdownPoint::Heading *>(slide->block(0));
+    EXPECT_EQ(heading->size(), 1);
+    EXPECT_EQ(heading->text(), "Heading");
+
+    EXPECT_EQ(slide->block(1)->type(), "paragraph");
+    MarkdownPoint::Paragraph *paragraph = dynamic_cast<MarkdownPoint::Paragraph *>(slide->block(1));
+    EXPECT_EQ(paragraph->text(), "Paragraph text is boring");
+}

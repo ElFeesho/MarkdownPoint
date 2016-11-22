@@ -75,11 +75,12 @@ namespace MarkdownPoint
 
             std::vector<std::string> markdownElements = split(slideString, "\n");
 
-            if (slideString.substr(0, 2) == "# ") {
-                slide->addBlock(new MarkdownPoint::Heading(slideString.substr(2), 1));
-            }
-            else {
-                slide->addBlock(new MarkdownPoint::Paragraph(slideString));
+            for(std::string element : markdownElements) {
+                if (element.substr(0, 2) == "# ") {
+                    slide->addBlock(new MarkdownPoint::Heading(element.substr(2), 1));
+                } else {
+                    slide->addBlock(new MarkdownPoint::Paragraph(element));
+                }
             }
         }
 

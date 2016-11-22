@@ -30,6 +30,16 @@ public:
         HPDF_Page_EndText(currentPage);
     }
 
+    void renderParagraph(MarkdownPoint::Paragraph *paragraph) override {
+        HPDF_Page_SetFontAndSize(currentPage, helvetica, 16);
+        HPDF_UINT len = 0;
+        HPDF_Page_SetRGBFill(currentPage, 0.8, 0.8, 0.8);
+        HPDF_Page_BeginText(currentPage);
+        HPDF_Page_TextRect(currentPage, 100, HPDF_Page_GetHeight(currentPage) - 125, HPDF_Page_GetWidth(currentPage), 100, paragraph->text().c_str(), HPDF_TALIGN_LEFT, &len);
+        std::cout << "Text length: " << len << std::endl;
+        HPDF_Page_EndText(currentPage);
+    }
+
     void writeToFile(const std::string &filename) {
         HPDF_SaveToFile(pdf, filename.c_str());
     }
@@ -47,13 +57,13 @@ private:
     HPDF_Page currentPage;
     HPDF_Font helvetica;
     HPDF_Font courier;
-    int sizes[6] { 48, 36, 24, 18, 14, 12 };
+    int sizes[4] { 48, 36, 24, 18 };
 };
 
 int main(int argc, char **argv) {
     MarkdownPoint::MarkdownPresentationParser parser;
     MarkdownPoint::Presentation presentation = parser.parse(
-            "# This is a test<==># Of the markdown<==># Presentation maker<==># MarkdownPoint");
+            "# This is a test\nWoop<==># Of the markdown<==># Presentation maker<==># MarkdownPoint");
     HPdfPresentationRenderer renderer;
     MarkdownPoint::PresentationRenderer presentationRenderer(&renderer);
     presentationRenderer.render(presentation);
