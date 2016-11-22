@@ -17,6 +17,5 @@ include_directories(include)
 add_library(libmarkdownpoint ${SOURCES})
 
 target_include_directories(libmarkdownpoint PUBLIC include)
-target_link_libraries(libmarkdownpoint PUBLIC hpdf)
 
 target_link_libraries(markdown_parse_test gtest gtest_main libmarkdownpoint)

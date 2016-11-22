@@ -4,4 +4,4 @@ set(SOURCES main.cpp)
 
 add_executable(markdownpoint ${SOURCES})
 
-target_link_libraries(markdownpoint libmarkdownpoint)
+target_link_libraries(markdownpoint libmarkdownpoint hpdf)
