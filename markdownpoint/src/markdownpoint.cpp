@@ -21,7 +21,6 @@ namespace MarkdownPoint
         return _text;
     }
 
-
 	Slide::Slide() {
 
 	}

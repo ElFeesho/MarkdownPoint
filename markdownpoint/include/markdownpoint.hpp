@@ -20,7 +20,7 @@ namespace MarkdownPoint {
         std::string text();
     private:
         std::string _text;
-        int _size;
+        uint32_t _size;
     };
 
     class Slide {
