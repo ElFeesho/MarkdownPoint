@@ -46,6 +46,18 @@ namespace MarkdownPoint {
     private:
         std::vector<Slide *> _slides;
     };
+
+    class MarkdownPresentationParser {
+    public:
+        MarkdownPoint::Presentation parse(const std::string &markdown);
+
+    private:
+        std::vector<std::string> splitSlides(const std::string &rawInput);
+
+        std::vector<std::string> split(const std::string &rawInput, const std::string &delimeter);
+    };
+
+
 }
 
 #endif
