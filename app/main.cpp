@@ -1,4 +1,5 @@
 #include <iostream>
+#include <functional>
 #include <markdownpoint.hpp>
 #include <hpdf.h>
 
@@ -34,21 +35,40 @@ public:
         const char *text = paragraph->text().c_str();
         std::cout << "Text length: " << paragraph->text().size() << std::endl;
         HPDF_REAL width = 0;
-        HPDF_UINT outwidth = HPDF_Font_MeasureText(helvetica, (const HPDF_BYTE *) text, (HPDF_UINT) paragraph->text().size(), textBoundaryWidth, 16, 0, 0, true, &width);
-        HPDF_Page_SetFontAndSize(currentPage, helvetica, 16);
-        std::cout << "Out width: " << outwidth << std::endl;
-        std::cout << "width: " << width << std::endl;
 
-        HPDF_UINT len = 0;
-        HPDF_Page_SetRGBFill(currentPage, 0.8, 0.8, 0.8);
-        HPDF_Page_BeginText(currentPage);
-        HPDF_Page_TextRect(currentPage, 100, HPDF_Page_GetHeight(currentPage) - textYPosition, textBoundaryOffset+textBoundaryWidth, 100, text, HPDF_TALIGN_LEFT, &len);
-        if (outwidth != paragraph->text().size())
+        std::vector<std::string> textLines = splitStringOnPredicate(paragraph->text(), [&](std::string input) -> unsigned long {
+            return HPDF_Font_MeasureText(helvetica, (const HPDF_BYTE *) input.c_str(), (HPDF_UINT) paragraph->text().size(), textBoundaryWidth, 16, 0, 0, true, &width);
+        });
+
+        for(std::string line : textLines)
         {
-            textYPosition += 18;
+            HPDF_UINT len = 0;
+            HPDF_Page_SetRGBFill(currentPage, 0.8, 0.8, 0.8);
+            HPDF_Page_SetFontAndSize(currentPage, helvetica, 16);
+            HPDF_Page_BeginText(currentPage);
+            HPDF_Page_TextRect(currentPage, textBoundaryOffset, HPDF_Page_GetHeight(currentPage) - textYPosition, textBoundaryOffset+textBoundaryWidth, textBoundaryOffset, line.c_str(), HPDF_TALIGN_LEFT, &len);
+            HPDF_Page_EndText(currentPage);
+            textYPosition += 20;
         }
-        HPDF_Page_EndText(currentPage);
-        textYPosition += 18;
+
+        if (textLines.size() == 0)
+        {
+            textYPosition += 20;
+        }
+    }
+
+    std::vector<std::string> splitStringOnPredicate(std::string input, std::function<unsigned long(std::string)> predicate)
+    {
+        std::vector<std::string> result;
+
+        while (input.size() > 0)
+        {
+            std::string chunk = input.substr(0, predicate(input));
+            result.push_back(chunk);
+            input = input.substr(chunk.size());
+        }
+
+        return result;
     }
 
     void writeToFile(const std::string &filename) {
@@ -81,7 +101,7 @@ private:
 int main(int argc, char **argv) {
     MarkdownPoint::MarkdownPresentationParser parser;
     MarkdownPoint::Presentation presentation = parser.parse(
-            "# Introduction\nMarkdown is a useful tool and is understood by anyone who has spent considerable time on GitHub.\nIt can be read as plain text, as well as formatted by a viewer.");
+            "# Introduction\nMarkdown is a useful tool and is understood by anyone who has spent considerable time on GitHub.\n\nIt can be read as plain text, as well as formatted by a viewer. Text is displayed at a nominal text size, and will wrap when it overflows past the end of the text area, ensuring that all content can be read clearly.");
     HPdfPresentationRenderer renderer;
     MarkdownPoint::PresentationRenderer presentationRenderer(&renderer);
     presentationRenderer.render(presentation);
