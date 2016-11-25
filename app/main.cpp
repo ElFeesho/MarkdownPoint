@@ -2,6 +2,7 @@
 #include <functional>
 #include <markdownpoint.hpp>
 #include <hpdf.h>
+#include "heading.h"
 
 class HPdfPresentationRenderer : public MarkdownPoint::Renderer {
 public:
@@ -22,7 +23,7 @@ public:
         addNewPage();
     }
 
-    void renderHeading(MarkdownPoint::Heading *heading) override {
+    void renderHeading(::MarkdownPoint::Heading *heading) override {
         HPDF_Page_SetFontAndSize(currentPage, helvetica, sizes[heading->size()-1]);
         float tw = HPDF_Page_TextWidth(currentPage, heading->text().c_str());
         HPDF_Page_SetRGBFill(currentPage, 0.8, 0.8, 0.8);

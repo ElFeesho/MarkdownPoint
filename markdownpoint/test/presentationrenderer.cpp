@@ -17,7 +17,7 @@ public:
         renderPageCalled = true;
     }
 
-    void renderHeading(MarkdownPoint::Heading *heading) {
+    void renderHeading(::MarkdownPoint::Heading *heading) {
         renderHeadingCalled = true;
     }
 
@@ -30,9 +30,9 @@ public:
     bool renderParagraphCalled;
 };
 
-TEST(presentation_renderer, will_delegate_creation_of_slide) {
-    SpyRenderer *spyRenderer = new SpyRenderer();
+SpyRenderer *spyRenderer = new SpyRenderer();
 
+TEST(presentation_renderer, will_delegate_creation_of_slide) {
     MarkdownPoint::PresentationRenderer renderer(spyRenderer);
 
     MarkdownPoint::Presentation presentation;
@@ -44,8 +44,6 @@ TEST(presentation_renderer, will_delegate_creation_of_slide) {
 }
 
 TEST(presentation_renderer, will_render_a_header) {
-    SpyRenderer *spyRenderer = new SpyRenderer();
-
     MarkdownPoint::PresentationRenderer renderer(spyRenderer);
 
     MarkdownPoint::Presentation presentation;
@@ -58,13 +56,23 @@ TEST(presentation_renderer, will_render_a_header) {
 }
 
 TEST(presentation_renderer, will_render_a_paragraph){
-    SpyRenderer *spyRenderer = new SpyRenderer();
-
     MarkdownPoint::PresentationRenderer renderer(spyRenderer);
 
     MarkdownPoint::Presentation presentation;
     MarkdownPoint::Slide *slide = presentation.addSlide();
     slide->addBlock(new MarkdownPoint::Paragraph("Expected Header"));
+
+    renderer.render(presentation);
+
+    EXPECT_EQ(spyRenderer->renderParagraphCalled, true);
+}
+
+TEST(presentation_renderer, will_render_a_list_of_bullets){
+    MarkdownPoint::PresentationRenderer renderer(spyRenderer);
+
+    MarkdownPoint::Presentation presentation;
+    MarkdownPoint::Slide *slide = presentation.addSlide();
+    slide->addBlock(new MarkdownPoint::BulletPoint("Expected Header"));
 
     renderer.render(presentation);
 

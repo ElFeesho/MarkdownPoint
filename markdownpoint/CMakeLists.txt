@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 
-set(SOURCES src/markdownpoint.cpp include/markdownpoint.hpp)
+set(SOURCES src/markdownpoint.cpp include/markdownpoint.hpp src/heading.cpp include/block.hpp include/heading.hpp include/paragraph.hpp src/paragraph.cpp src/slide.cpp include/slide.hpp src/presentation.cpp include/presentation.hpp src/markdownpresentationparser.cpp include/markdownpresentationparser.hpp include/presentationrenderer.hpp src/presentationrenderer.cpp include/bulletpoint.hpp src/bulletpoint.cpp)
 
 add_subdirectory(gtest)
 
