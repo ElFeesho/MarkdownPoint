@@ -2,7 +2,8 @@
 #include <functional>
 #include <markdownpoint.hpp>
 #include <hpdf.h>
-#include "heading.h"
+#include <iostream>
+#include <fstream>
 
 class HPdfPresentationRenderer : public MarkdownPoint::Renderer {
 public:
@@ -34,7 +35,6 @@ public:
 
     void renderParagraph(MarkdownPoint::Paragraph *paragraph) override {
         const char *text = paragraph->text().c_str();
-        std::cout << "Text length: " << paragraph->text().size() << std::endl;
         HPDF_REAL width = 0;
 
         std::vector<std::string> textLines = splitStringOnPredicate(paragraph->text(), [&](std::string input) -> unsigned long {
@@ -99,14 +99,28 @@ private:
     int sizes[4] { 48, 36, 24, 18 };
 };
 
+std::string readFile(char *filename)
+{
+    std::ifstream file(filename);
+    std::string str;
+    std::string fileContents = "";
+    std::vector<std::string> filenames;
+    while(std::getline(file, str)){
+        fileContents += str + "\n";
+    }
+
+    return fileContents;
+}
+
 int main(int argc, char **argv) {
+
+    std::string markdown = readFile(argv[1]);
     MarkdownPoint::MarkdownPresentationParser parser;
-    MarkdownPoint::Presentation presentation = parser.parse(
-            "# Introduction\nMarkdown is a useful tool and is understood by anyone who has spent considerable time on GitHub.\n\nIt can be read as plain text, as well as formatted by a viewer. Text is displayed at a nominal text size, and will wrap when it overflows past the end of the text area, ensuring that all content can be read clearly.");
+    MarkdownPoint::Presentation presentation = parser.parse(markdown);
     HPdfPresentationRenderer renderer;
     MarkdownPoint::PresentationRenderer presentationRenderer(&renderer);
     presentationRenderer.render(presentation);
 
-    renderer.writeToFile("test.pdf");
+    renderer.writeToFile(argv[2]);
     return 0;
 }

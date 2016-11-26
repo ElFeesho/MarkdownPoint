@@ -14,6 +14,10 @@ namespace MarkdownPoint {
         BulletPoint(const std::string &text, uint32_t indentLevel = 0);
 
         std::string type();
+
+        uint32_t indentLevel();
+
+        std::string text();
     private:
         std::string _text;
         uint32_t _indentLevel;

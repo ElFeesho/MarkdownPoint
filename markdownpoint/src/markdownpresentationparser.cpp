@@ -2,9 +2,7 @@
 // Created by Christopher Sawczuk on 25/11/2016.
 //
 
-#include <markdownpresentationparser.hpp>
-#include <heading.hpp>
-#include <paragraph.hpp>
+#include <markdownpoint.hpp>
 
 namespace MarkdownPoint {
     MarkdownPoint::Presentation MarkdownPresentationParser::parse(const std::string &markdown) {
@@ -16,8 +14,12 @@ namespace MarkdownPoint {
             std::vector <std::string> markdownElements = split(slideString, "\n");
 
             for (std::string element : markdownElements) {
-                if (element.substr(0, 2) == "# ") {
+                std::string start = element.substr(0, 2);
+                if (start == "# ") {
                     slide->addBlock(new MarkdownPoint::Heading(element.substr(2), 1));
+                } else if (start == "* ")
+                {
+                    slide->addBlock(new MarkdownPoint::BulletPoint(element.substr(2)));
                 } else {
                     slide->addBlock(new MarkdownPoint::Paragraph(element));
                 }

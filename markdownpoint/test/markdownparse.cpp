@@ -63,3 +63,16 @@ TEST(markdown_parsing, can_parse_a_paragraph_and_heading) {
     MarkdownPoint::Paragraph *paragraph = dynamic_cast<MarkdownPoint::Paragraph *>(slide->block(1));
     EXPECT_EQ(paragraph->text(), "Paragraph text is boring");
 }
+
+TEST(markdown_parsing, can_parse_a_bullet_point) {
+    MarkdownPoint::MarkdownPresentationParser p;
+    MarkdownPoint::Presentation presentation = p.parse("* Bullet point");
+
+    MarkdownPoint::Slide *slide = presentation.slide(0);
+    EXPECT_EQ(slide->blockCount(), 1);
+    EXPECT_EQ(slide->block(0)->type(), "bulletpoint");
+
+    MarkdownPoint::BulletPoint *bulletPoint = dynamic_cast<MarkdownPoint::BulletPoint *>(slide->block(0));
+    EXPECT_EQ(bulletPoint->indentLevel(), 0);
+    EXPECT_EQ(bulletPoint->text(), "Bullet point");
+}

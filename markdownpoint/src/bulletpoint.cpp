@@ -12,6 +12,14 @@ namespace MarkdownPoint {
     }
 
     std::string BulletPoint::type() {
-        return nullptr;
+        return "bulletpoint";
+    }
+
+    uint32_t BulletPoint::indentLevel() {
+        return _indentLevel;
+    }
+
+    std::string BulletPoint::text() {
+        return _text;
     }
 }
