@@ -28,11 +28,11 @@ public:
 
         if (bulletPoint->indentLevel() < 2)
         {
-            HPDF_Page_Circle(currentPage, textBoundaryOffset + bulletPoint->indentLevel() * 15 + 5, HPDF_Page_GetHeight(currentPage) - textYPosition - 9, 3);
+            HPDF_Page_Circle(currentPage, textBoundaryOffset + bulletPoint->indentLevel() * 15 + 5, HPDF_Page_GetHeight(currentPage) - textYPosition - 9 - 16, 3);
         }
         else
         {
-            HPDF_Page_Rectangle(currentPage, textBoundaryOffset + bulletPoint->indentLevel() * 15 + 3, HPDF_Page_GetHeight(currentPage) - textYPosition - 12, 6, 6);
+            HPDF_Page_Rectangle(currentPage, textBoundaryOffset + bulletPoint->indentLevel() * 15 + 3, HPDF_Page_GetHeight(currentPage) - textYPosition - 12 - 16, 6, 6);
         }
 
         if (bulletPoint->indentLevel() == 1)
@@ -47,12 +47,18 @@ public:
     }
 
     void renderHeading(MarkdownPoint::Heading *heading) override {
-        HPDF_Page_SetFontAndSize(currentPage, helvetica, sizes[heading->size()-1]);
+        unsigned int headingSize = heading->size() - 1;
+        int fontSize = sizes[headingSize];
+        int margin = margins[headingSize];
+        HPDF_Page_SetFontAndSize(currentPage, helvetica, fontSize);
         float tw = HPDF_Page_TextWidth(currentPage, heading->text().c_str());
         HPDF_Page_SetRGBFill(currentPage, 0.8, 0.8, 0.8);
         HPDF_Page_BeginText(currentPage);
-        HPDF_Page_TextOut(currentPage, (HPDF_Page_GetWidth(currentPage) - tw) / 2, HPDF_Page_GetHeight(currentPage) - 100, heading->text().c_str());
+        uint32_t len;
+        HPDF_Page_TextRect(currentPage, textBoundaryOffset, HPDF_Page_GetHeight(currentPage) - textYPosition - (margin - fontSize), textBoundaryOffset + textBoundaryWidth, textBoundaryOffset, heading->text().c_str(), headingSize == 0 ? HPDF_TALIGN_CENTER : HPDF_TALIGN_LEFT, &len);
         HPDF_Page_EndText(currentPage);
+
+        textYPosition += margin;
     }
 
     void renderParagraph(MarkdownPoint::Paragraph *paragraph) override {
@@ -77,10 +83,10 @@ public:
     void renderLineOfText(const std::string &line, uint32_t textIndent = 0) {
         HPDF_UINT len = 0;
         HPDF_Page_SetRGBFill(currentPage, 0.8, 0.8, 0.8);
-        HPDF_Page_SetFontAndSize(currentPage, helvetica, 16);
+        int fontSize = 16;
+        HPDF_Page_SetFontAndSize(currentPage, helvetica, fontSize);
         HPDF_Page_BeginText(currentPage);
-        HPDF_Page_TextRect(currentPage, textBoundaryOffset + textIndent, HPDF_Page_GetHeight(currentPage) - textYPosition, textBoundaryOffset + textBoundaryWidth,
-                           textBoundaryOffset, line.c_str(), HPDF_TALIGN_LEFT, &len);
+        HPDF_Page_TextRect(currentPage, textBoundaryOffset + textIndent, HPDF_Page_GetHeight(currentPage) - textYPosition - fontSize, textBoundaryOffset + textBoundaryWidth, textBoundaryOffset, line.c_str(), HPDF_TALIGN_LEFT, &len);
         HPDF_Page_EndText(currentPage);
         textYPosition += 20;
     }
@@ -113,7 +119,7 @@ private:
         HPDF_Page_SetRGBStroke(currentPage, 0.8, 0.8, 0.8);
         HPDF_Page_SetRGBFill(currentPage, 0.8, 0.8, 0.8);
         textBoundaryWidth = HPDF_Page_GetWidth(currentPage)-textBoundaryOffset*2;
-        textYPosition = 125;
+        textYPosition = 25;
     }
 
     HPDF_Doc pdf;
@@ -126,6 +132,7 @@ private:
     HPDF_REAL textYPosition { 125 };
 
     int sizes[4] { 48, 36, 24, 18 };
+    int margins[4] { 56, 48, 36, 24 };
 };
 
 std::string readFile(char *filename)
