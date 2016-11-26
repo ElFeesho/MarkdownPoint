@@ -25,9 +25,14 @@ public:
         renderParagraphCalled = true;
     }
 
+    void renderBulletPoint(MarkdownPoint::BulletPoint *bulletPoint) {
+        renderBulletPointCalled = true;
+    }
+
     bool renderPageCalled;
     bool renderHeadingCalled;
     bool renderParagraphCalled;
+    bool renderBulletPointCalled;
 };
 
 SpyRenderer *spyRenderer = new SpyRenderer();
@@ -60,21 +65,21 @@ TEST(presentation_renderer, will_render_a_paragraph){
 
     MarkdownPoint::Presentation presentation;
     MarkdownPoint::Slide *slide = presentation.addSlide();
-    slide->addBlock(new MarkdownPoint::Paragraph("Expected Header"));
+    slide->addBlock(new MarkdownPoint::Paragraph("Expected Paragraph"));
 
     renderer.render(presentation);
 
     EXPECT_EQ(spyRenderer->renderParagraphCalled, true);
 }
 
-TEST(presentation_renderer, will_render_a_list_of_bullets){
+TEST(presentation_renderer, will_render_a_bullet_point){
     MarkdownPoint::PresentationRenderer renderer(spyRenderer);
 
     MarkdownPoint::Presentation presentation;
     MarkdownPoint::Slide *slide = presentation.addSlide();
-    slide->addBlock(new MarkdownPoint::BulletPoint("Expected Header"));
+    slide->addBlock(new MarkdownPoint::BulletPoint("Bullet Point"));
 
     renderer.render(presentation);
 
-    EXPECT_EQ(spyRenderer->renderParagraphCalled, true);
+    EXPECT_EQ(spyRenderer->renderBulletPointCalled, true);
 }

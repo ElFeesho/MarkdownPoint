@@ -20,6 +20,8 @@ namespace MarkdownPoint {
                     _renderer->renderHeading(dynamic_cast<Heading *>(block));
                 } else if (block->type() == "paragraph") {
                     _renderer->renderParagraph(dynamic_cast<Paragraph *>(block));
+                } else if (block->type() == "bulletpoint") {
+                    _renderer->renderBulletPoint(dynamic_cast<BulletPoint *>(block));
                 }
             }
         }

@@ -8,6 +8,7 @@
 #include <presentation.hpp>
 #include <heading.hpp>
 #include <paragraph.hpp>
+#include "bulletpoint.hpp"
 
 namespace MarkdownPoint {
 
@@ -17,6 +18,7 @@ namespace MarkdownPoint {
         virtual void renderPage(Slide *slide) = 0;
         virtual void renderHeading(Heading *heading) = 0;
         virtual void renderParagraph(Paragraph *paragraph) = 0;
+        virtual void renderBulletPoint(BulletPoint *bulletPoint) = 0;
     };
 
     class PresentationRenderer {

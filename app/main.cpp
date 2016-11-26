@@ -24,7 +24,13 @@ public:
         addNewPage();
     }
 
-    void renderHeading(::MarkdownPoint::Heading *heading) override {
+    void renderBulletPoint(MarkdownPoint::BulletPoint *bulletPoint) override {
+        HPDF_Page_Circle(currentPage, textBoundaryOffset + 5, HPDF_Page_GetHeight(currentPage) - textYPosition - 9, 3);
+        HPDF_Page_Fill(currentPage);
+        renderLineOfText(bulletPoint->text(), 15);
+    }
+
+    void renderHeading(MarkdownPoint::Heading *heading) override {
         HPDF_Page_SetFontAndSize(currentPage, helvetica, sizes[heading->size()-1]);
         float tw = HPDF_Page_TextWidth(currentPage, heading->text().c_str());
         HPDF_Page_SetRGBFill(currentPage, 0.8, 0.8, 0.8);
@@ -43,19 +49,24 @@ public:
 
         for(std::string line : textLines)
         {
-            HPDF_UINT len = 0;
-            HPDF_Page_SetRGBFill(currentPage, 0.8, 0.8, 0.8);
-            HPDF_Page_SetFontAndSize(currentPage, helvetica, 16);
-            HPDF_Page_BeginText(currentPage);
-            HPDF_Page_TextRect(currentPage, textBoundaryOffset, HPDF_Page_GetHeight(currentPage) - textYPosition, textBoundaryOffset+textBoundaryWidth, textBoundaryOffset, line.c_str(), HPDF_TALIGN_LEFT, &len);
-            HPDF_Page_EndText(currentPage);
-            textYPosition += 20;
+            renderLineOfText(line);
         }
 
         if (textLines.size() == 0)
         {
             textYPosition += 20;
         }
+    }
+
+    void renderLineOfText(const std::string &line, uint32_t textIndent = 0) {
+        HPDF_UINT len = 0;
+        HPDF_Page_SetRGBFill(currentPage, 0.8, 0.8, 0.8);
+        HPDF_Page_SetFontAndSize(currentPage, helvetica, 16);
+        HPDF_Page_BeginText(currentPage);
+        HPDF_Page_TextRect(currentPage, textBoundaryOffset + textIndent, HPDF_Page_GetHeight(currentPage) - textYPosition, textBoundaryOffset + textBoundaryWidth,
+                           textBoundaryOffset, line.c_str(), HPDF_TALIGN_LEFT, &len);
+        HPDF_Page_EndText(currentPage);
+        textYPosition += 20;
     }
 
     std::vector<std::string> splitStringOnPredicate(std::string input, std::function<unsigned long(std::string)> predicate)

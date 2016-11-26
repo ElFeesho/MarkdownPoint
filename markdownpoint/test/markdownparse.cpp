@@ -66,13 +66,23 @@ TEST(markdown_parsing, can_parse_a_paragraph_and_heading) {
 
 TEST(markdown_parsing, can_parse_a_bullet_point) {
     MarkdownPoint::MarkdownPresentationParser p;
-    MarkdownPoint::Presentation presentation = p.parse("* Bullet point");
+    MarkdownPoint::Presentation presentation = p.parse("* Bullet point\n+ Bullet point 2\n- Bullet point 3");
 
     MarkdownPoint::Slide *slide = presentation.slide(0);
-    EXPECT_EQ(slide->blockCount(), 1);
+    EXPECT_EQ(slide->blockCount(), 3);
     EXPECT_EQ(slide->block(0)->type(), "bulletpoint");
+    EXPECT_EQ(slide->block(1)->type(), "bulletpoint");
+    EXPECT_EQ(slide->block(2)->type(), "bulletpoint");
 
     MarkdownPoint::BulletPoint *bulletPoint = dynamic_cast<MarkdownPoint::BulletPoint *>(slide->block(0));
     EXPECT_EQ(bulletPoint->indentLevel(), 0);
     EXPECT_EQ(bulletPoint->text(), "Bullet point");
+
+    bulletPoint = dynamic_cast<MarkdownPoint::BulletPoint *>(slide->block(1));
+    EXPECT_EQ(bulletPoint->indentLevel(), 0);
+    EXPECT_EQ(bulletPoint->text(), "Bullet point 2");
+
+    bulletPoint = dynamic_cast<MarkdownPoint::BulletPoint *>(slide->block(2));
+    EXPECT_EQ(bulletPoint->indentLevel(), 0);
+    EXPECT_EQ(bulletPoint->text(), "Bullet point 3");
 }

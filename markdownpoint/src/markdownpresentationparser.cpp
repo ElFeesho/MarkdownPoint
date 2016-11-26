@@ -17,7 +17,7 @@ namespace MarkdownPoint {
                 std::string start = element.substr(0, 2);
                 if (start == "# ") {
                     slide->addBlock(new MarkdownPoint::Heading(element.substr(2), 1));
-                } else if (start == "* ")
+                } else if (start == "* " || start == "- " || start == "+ ")
                 {
                     slide->addBlock(new MarkdownPoint::BulletPoint(element.substr(2)));
                 } else {
