@@ -18,9 +18,9 @@ Using the following [markdown document](https://github.com/adam-p/markdown-here/
   * [ ] Strikethrough
   * [ ] Italic
  * Bullet points
-  * [ ] Top level bullet points
-  * [ ] Second level bullet points
-  * [ ] Third level bullet points
+  * [x] Top level bullet points
+  * [x] Second level bullet points
+  * [x] Third level bullet points
  * Links
   * [ ] In-line link
   * [ ] In-line link with title (may not be possible)
