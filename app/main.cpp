@@ -25,9 +25,25 @@ public:
     }
 
     void renderBulletPoint(MarkdownPoint::BulletPoint *bulletPoint) override {
-        HPDF_Page_Circle(currentPage, textBoundaryOffset + 5, HPDF_Page_GetHeight(currentPage) - textYPosition - 9, 3);
-        HPDF_Page_Fill(currentPage);
-        renderLineOfText(bulletPoint->text(), 15);
+
+        if (bulletPoint->indentLevel() < 2)
+        {
+            HPDF_Page_Circle(currentPage, textBoundaryOffset + bulletPoint->indentLevel() * 15 + 5, HPDF_Page_GetHeight(currentPage) - textYPosition - 9, 3);
+        }
+        else
+        {
+            HPDF_Page_Rectangle(currentPage, textBoundaryOffset + bulletPoint->indentLevel() * 15 + 3, HPDF_Page_GetHeight(currentPage) - textYPosition - 12, 6, 6);
+        }
+
+        if (bulletPoint->indentLevel() == 1)
+        {
+            HPDF_Page_Stroke(currentPage);
+        }
+        else
+        {
+            HPDF_Page_Fill(currentPage);
+        }
+        renderLineOfText(bulletPoint->text(), 15 * (bulletPoint->indentLevel()+1));
     }
 
     void renderHeading(MarkdownPoint::Heading *heading) override {
@@ -94,6 +110,8 @@ private:
         HPDF_Page_SetRGBFill(currentPage, 0.3, 0.3, 0.3);
         HPDF_Page_Rectangle(currentPage, 0, 0, HPDF_Page_GetWidth(currentPage), HPDF_Page_GetHeight(currentPage));
         HPDF_Page_Fill(currentPage);
+        HPDF_Page_SetRGBStroke(currentPage, 0.8, 0.8, 0.8);
+        HPDF_Page_SetRGBFill(currentPage, 0.8, 0.8, 0.8);
         textBoundaryWidth = HPDF_Page_GetWidth(currentPage)-textBoundaryOffset*2;
         textYPosition = 125;
     }

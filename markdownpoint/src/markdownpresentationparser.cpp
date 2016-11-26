@@ -11,15 +11,16 @@ namespace MarkdownPoint {
         for (std::string slideString : splitSlides(markdown)) {
             MarkdownPoint::Slide *slide = presentation.addSlide();
 
-            std::vector <std::string> markdownElements = split(slideString, "\n");
+            std::vector<std::string> markdownElements = split(slideString, "\n");
+
 
             for (std::string element : markdownElements) {
-                std::string start = element.substr(0, 2);
+                uint32_t spaces = countSpaces(element);
+                std::string start = element.substr(spaces, 2);
                 if (start == "# ") {
                     slide->addBlock(new MarkdownPoint::Heading(element.substr(2), 1));
-                } else if (start == "* " || start == "- " || start == "+ ")
-                {
-                    slide->addBlock(new MarkdownPoint::BulletPoint(element.substr(2)));
+                } else if (start == "* " || start == "- " || start == "+ ") {
+                    slide->addBlock(new MarkdownPoint::BulletPoint(element.substr(spaces+2), (spaces / 2)));
                 } else {
                     slide->addBlock(new MarkdownPoint::Paragraph(element));
                 }
@@ -29,13 +30,13 @@ namespace MarkdownPoint {
         return presentation;
     }
 
-    std::vector <std::string> MarkdownPresentationParser::splitSlides(const std::string &rawInput) {
+    std::vector<std::string> MarkdownPresentationParser::splitSlides(const std::string &rawInput) {
         return split(rawInput, "<==>");
     }
 
-    std::vector <std::string>
+    std::vector<std::string>
     MarkdownPresentationParser::split(const std::string &rawInput, const std::string &delimeter) {
-        std::vector <std::string> tokenisedResult;
+        std::vector<std::string> tokenisedResult;
 
         std::string inputLeft = rawInput;
         while (inputLeft.find(delimeter) != std::string::npos) {
@@ -46,5 +47,21 @@ namespace MarkdownPoint {
         tokenisedResult.push_back(inputLeft);
 
         return tokenisedResult;
+    }
+
+    uint32_t MarkdownPresentationParser::countSpaces(std::string input) {
+        int spaces = 0;
+        for(int i = 0; i < input.size(); i++)
+        {
+            if (input[i] == ' ')
+            {
+                spaces++;
+            }
+            else
+            {
+                break;
+            }
+        }
+        return spaces;
     }
 }

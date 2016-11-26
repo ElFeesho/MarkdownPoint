@@ -16,6 +16,8 @@ namespace MarkdownPoint {
         std::vector<std::string> splitSlides(const std::string &rawInput);
 
         std::vector<std::string> split(const std::string &rawInput, const std::string &delimeter);
+
+        uint32_t countSpaces(std::string input);
     };
 }
 
