@@ -8,9 +8,9 @@ Using the following [markdown document](https://github.com/adam-p/markdown-here/
 
  * Headings
   * [x] Heading Size 1 
-  * [ ] Heading Size 2
-  * [ ] Heading Size 3
-  * [ ] Heading Size 4
+  * [x] Heading Size 2
+  * [x] Heading Size 3
+  * [x] Heading Size 4
  * Paragraph text
   * [x] Unformatted
   * [ ] Bold
