@@ -16,9 +16,16 @@ namespace MarkdownPoint {
 
             for (std::string element : markdownElements) {
                 uint32_t spaces = countSpaces(element);
+                std::string trimmed = element.substr(spaces);
                 std::string start = element.substr(spaces, 2);
-                if (start == "# ") {
+                if (trimmed.substr(0, 2) == "# ") {
                     slide->addBlock(new MarkdownPoint::Heading(element.substr(2), 1));
+                } else if (trimmed.substr(0, 3) == "## ") {
+                    slide->addBlock(new MarkdownPoint::Heading(element.substr(3), 2));
+                } else if (trimmed.substr(0, 4) == "### ") {
+                    slide->addBlock(new MarkdownPoint::Heading(element.substr(4), 3));
+                } else if (trimmed.substr(0, 5) == "#### ") {
+                    slide->addBlock(new MarkdownPoint::Heading(element.substr(5), 4));
                 } else if (start == "* " || start == "- " || start == "+ ") {
                     slide->addBlock(new MarkdownPoint::BulletPoint(element.substr(spaces+2), (spaces / 2)));
                 } else {

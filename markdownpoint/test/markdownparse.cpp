@@ -34,6 +34,31 @@ TEST(markdown_parsing, can_parse_a_heading) {
     EXPECT_EQ(heading->text(), "Heading");
 }
 
+TEST(markdown_parsing, can_parse_a_heading_of_multiple_sizes) {
+    MarkdownPoint::MarkdownPresentationParser p;
+    MarkdownPoint::Presentation presentation = p.parse("# Heading\n## Heading 2\n### Heading 3\n#### Heading 4");
+
+    MarkdownPoint::Slide *slide = presentation.slide(0);
+    EXPECT_EQ(slide->blockCount(), 4);
+    EXPECT_EQ(slide->block(0)->type(), "heading");
+
+    MarkdownPoint::Heading *heading = dynamic_cast<MarkdownPoint::Heading *>(slide->block(0));
+    EXPECT_EQ(heading->size(), 1);
+    EXPECT_EQ(heading->text(), "Heading");
+
+    heading = dynamic_cast<MarkdownPoint::Heading *>(slide->block(1));
+    EXPECT_EQ(heading->size(), 2);
+    EXPECT_EQ(heading->text(), "Heading 2");
+
+    heading = dynamic_cast<MarkdownPoint::Heading *>(slide->block(2));
+    EXPECT_EQ(heading->size(), 3);
+    EXPECT_EQ(heading->text(), "Heading 3");
+
+    heading = dynamic_cast<MarkdownPoint::Heading *>(slide->block(3));
+    EXPECT_EQ(heading->size(), 4);
+    EXPECT_EQ(heading->text(), "Heading 4");
+}
+
 TEST(markdown_parsing, can_parse_a_paragraph) {
     MarkdownPoint::MarkdownPresentationParser p;
     MarkdownPoint::Presentation presentation = p.parse("Paragraph text is boring");
