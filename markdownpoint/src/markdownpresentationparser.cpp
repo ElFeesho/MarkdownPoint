@@ -13,7 +13,6 @@ namespace MarkdownPoint {
 
             std::vector<std::string> markdownElements = split(slideString, "\n");
 
-
             for (std::string element : markdownElements) {
                 uint32_t spaces = countSpaces(element);
                 std::string trimmed = element.substr(spaces);
@@ -57,7 +56,7 @@ namespace MarkdownPoint {
     }
 
     uint32_t MarkdownPresentationParser::countSpaces(std::string input) {
-        int spaces = 0;
+        uint32_t spaces = 0;
         for(int i = 0; i < input.size(); i++)
         {
             if (input[i] == ' ')
