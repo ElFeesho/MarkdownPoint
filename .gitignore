@@ -2,3 +2,14 @@ CMakeFiles/
 *.cmake
 CMakeCache.txt
 Makefile
+.DS_Store
+.idea/MarkdownPoint.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
+MarkdownPoint.cbp
+app/markdownpoint
+app/test.pdf
+markdownpoint/liblibmarkdownpoint.a
+markdownpoint/markdown_parse_test
