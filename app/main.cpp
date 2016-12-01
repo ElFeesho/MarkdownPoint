@@ -1,8 +1,7 @@
 #include <iostream>
-#include <functional>
 #include <markdownpoint.hpp>
 #include <hpdf.h>
-#include <iostream>
+#include <string>
 #include <fstream>
 
 class HPdfPresentationRenderer : public MarkdownPoint::Renderer {
@@ -138,19 +137,14 @@ private:
 std::string readFile(char *filename)
 {
     std::ifstream file(filename);
-    std::string str;
-    std::string fileContents = "";
-    std::vector<std::string> filenames;
-    while(std::getline(file, str)){
-        fileContents += str + "\n";
-    }
-
-    return fileContents;
+    file.unsetf(std::ios_base::skipws);
+    return std::string(std::istream_iterator<char>(file), std::istream_iterator<char>());
 }
 
 int main(int argc, char **argv) {
 
     std::string markdown = readFile(argv[1]);
+
     MarkdownPoint::MarkdownPresentationParser parser;
     MarkdownPoint::Presentation presentation = parser.parse(markdown);
     HPdfPresentationRenderer renderer;
