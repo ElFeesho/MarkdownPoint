@@ -12,14 +12,14 @@ namespace MarkdownPoint {
     public:
         Presentation();
 
-        ssize_t slideCount();
+        ssize_t slideCount() const;
 
         Slide *addSlide();
 
-        Slide *slide(uint32_t idx);
+        Slide *slide(uint32_t idx) const;
 
     private:
-        std::vector<Slide *> _slides;
+        std::vector<std::unique_ptr<Slide>> _slides;
     };
 }
 

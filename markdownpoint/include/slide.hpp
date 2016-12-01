@@ -21,13 +21,13 @@ namespace MarkdownPoint {
         template<typename T>
         T element(uint32_t idx)
         {
-            return dynamic_cast<T>(_elements[idx]);
+            return dynamic_cast<T>(_elements[idx].get());
         }
 
         ssize_t elementCount();
 
     private:
-        std::vector<Element *> _elements;
+        std::vector<std::unique_ptr<Element>> _elements;
     };
 }
 

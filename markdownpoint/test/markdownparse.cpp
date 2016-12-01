@@ -8,8 +8,14 @@
 #include <gtest/gtest.h>
 #include <markdownpoint.hpp>
 
-MarkdownPoint::Slide *givenAParsedPresentationSlide(const std::string &markdown) {
-    return MarkdownPoint::MarkdownPresentationParser().parse(markdown).slide(0);
+MarkdownPoint::Presentation parsePresentation(const std::string &markdown);
+
+MarkdownPoint::Slide *givenAParsedPresentationSlide(const MarkdownPoint::Presentation &presentation) {
+    return presentation.slide(0);
+}
+
+MarkdownPoint::Presentation parsePresentation(const std::string &markdown) {
+    return MarkdownPoint::MarkdownPresentationParser().parse(markdown);
 }
 
 void blocksAreOfTheFollowingTypes(MarkdownPoint::Slide *slide, std::vector<const std::string> types) {
@@ -18,19 +24,16 @@ void blocksAreOfTheFollowingTypes(MarkdownPoint::Slide *slide, std::vector<const
     }
 }
 
-void expectHeadingWithSizeAndText(MarkdownPoint::Heading* heading, int size, const std::string &text)
-{
+void expectHeadingWithSizeAndText(MarkdownPoint::Heading *heading, int size, const std::string &text) {
     EXPECT_EQ(heading->size(), size);
     EXPECT_EQ(heading->text(), text);
 }
 
-void expectParagraphWithText(MarkdownPoint::Paragraph* paragraph, const std::string &text)
-{
+void expectParagraphWithText(MarkdownPoint::Paragraph *paragraph, const std::string &text) {
     EXPECT_EQ(paragraph->text(), text);
 }
 
-void expectBulletPointhWithIndentationAndText(MarkdownPoint::BulletPoint* bulletPoint, uint32_t indentation, const std::string &text)
-{
+void expectBulletPointhWithIndentationAndText(MarkdownPoint::BulletPoint *bulletPoint, uint32_t indentation, const std::string &text) {
     EXPECT_EQ(bulletPoint->text(), text);
     EXPECT_EQ(bulletPoint->indentLevel(), indentation);
 }
@@ -48,7 +51,9 @@ TEST(markdown_parsing, can_parse_multiple_slides) {
 }
 
 TEST(markdown_parsing, can_parse_a_heading) {
-    auto slide = givenAParsedPresentationSlide("# Heading");
+    auto presentation = parsePresentation("# Heading");
+
+    auto slide = givenAParsedPresentationSlide(presentation);
 
     blocksAreOfTheFollowingTypes(slide, {"heading"});
 
@@ -56,7 +61,9 @@ TEST(markdown_parsing, can_parse_a_heading) {
 }
 
 TEST(markdown_parsing, can_parse_a_heading_of_multiple_sizes) {
-    auto slide = givenAParsedPresentationSlide("# Heading\n## Heading 2\n### Heading 3\n#### Heading 4");
+    auto presentation = parsePresentation("# Heading\n## Heading 2\n### Heading 3\n#### Heading 4");
+
+    auto slide = givenAParsedPresentationSlide(presentation);
 
     blocksAreOfTheFollowingTypes(slide, {"heading", "heading", "heading", "heading"});
 
@@ -67,14 +74,18 @@ TEST(markdown_parsing, can_parse_a_heading_of_multiple_sizes) {
 }
 
 TEST(markdown_parsing, can_parse_a_paragraph) {
-    auto slide = givenAParsedPresentationSlide("Paragraph text is boring");
+    auto presentation = parsePresentation("Paragraph text is boring");
+    
+    auto slide = givenAParsedPresentationSlide(presentation);
 
     expectParagraphWithText(slide->element<MarkdownPoint::Paragraph *>(0), "Paragraph text is boring");
 }
 
 
 TEST(markdown_parsing, can_parse_a_paragraph_and_heading) {
-    auto slide = givenAParsedPresentationSlide("# Heading\nParagraph text is boring");
+    const MarkdownPoint::Presentation presentation = parsePresentation("# Heading\nParagraph text is boring");
+    
+    auto slide = givenAParsedPresentationSlide(presentation);
 
     expectHeadingWithSizeAndText(slide->element<MarkdownPoint::Heading *>(0), 1, "Heading");
 
@@ -82,7 +93,10 @@ TEST(markdown_parsing, can_parse_a_paragraph_and_heading) {
 }
 
 TEST(markdown_parsing, can_parse_a_bullet_point) {
-    auto slide = givenAParsedPresentationSlide("* Bullet point\n+ Bullet point 2\n- Bullet point 3");
+    const MarkdownPoint::Presentation presentation = parsePresentation("* Bullet point\n+ Bullet point 2\n- Bullet point 3");
+    
+    auto slide = givenAParsedPresentationSlide(presentation);
+
     blocksAreOfTheFollowingTypes(slide, {"bulletpoint", "bulletpoint", "bulletpoint"});
 
     expectBulletPointhWithIndentationAndText(slide->element<MarkdownPoint::BulletPoint *>(0), 0, "Bullet point");
@@ -92,7 +106,9 @@ TEST(markdown_parsing, can_parse_a_bullet_point) {
 
 
 TEST(markdown_parsing, can_parse_a_indented_bullet_points) {
-    auto slide = givenAParsedPresentationSlide("  * Bullet point\n    + Bullet point 2\n      - Bullet point 3");
+    const MarkdownPoint::Presentation presentation = parsePresentation("  * Bullet point\n    + Bullet point 2\n      - Bullet point 3");
+
+    auto slide = givenAParsedPresentationSlide(presentation);
 
     blocksAreOfTheFollowingTypes(slide, {"bulletpoint", "bulletpoint", "bulletpoint"});
 
