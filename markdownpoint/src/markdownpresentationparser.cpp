@@ -57,16 +57,9 @@ namespace MarkdownPoint {
 
     uint32_t MarkdownPresentationParser::countSpaces(std::string input) {
         uint32_t spaces = 0;
-        for(int i = 0; i < input.size(); i++)
+        for(uint32_t i = 0; i < input.size() && input[i] == ' '; i++)
         {
-            if (input[i] == ' ')
-            {
-                spaces++;
-            }
-            else
-            {
-                break;
-            }
+            spaces = i+1;
         }
         return spaces;
     }
