@@ -2,136 +2,101 @@
 // Created by Christopher Sawczuk on 21/11/2016.
 //
 
+#include <vector>
 #include <string>
 
 #include <gtest/gtest.h>
 #include <markdownpoint.hpp>
 
+MarkdownPoint::Slide *givenAParsedPresentationSlide(const std::string &markdown) {
+    return MarkdownPoint::MarkdownPresentationParser().parse(markdown).slide(0);
+}
+
+void blocksAreOfTheFollowingTypes(MarkdownPoint::Slide *slide, std::vector<const std::string> types) {
+    for (uint32_t i = 0; i < types.size(); i++) {
+        EXPECT_EQ(slide->block(i)->type(), types[i]);
+    }
+}
+
+void expectHeadingWithSizeAndText(MarkdownPoint::Heading* heading, int size, const std::string &text)
+{
+    EXPECT_EQ(heading->size(), size);
+    EXPECT_EQ(heading->text(), text);
+}
+
+void expectParagraphWithText(MarkdownPoint::Paragraph* paragraph, const std::string &text)
+{
+    EXPECT_EQ(paragraph->text(), text);
+}
+
+void expectBulletPointhWithIndentationAndText(MarkdownPoint::BulletPoint* bulletPoint, uint32_t indentation, const std::string &text)
+{
+    EXPECT_EQ(bulletPoint->text(), text);
+    EXPECT_EQ(bulletPoint->indentLevel(), indentation);
+}
+
 TEST(markdown_parsing, can_parse_an_empty_page) {
-    MarkdownPoint::MarkdownPresentationParser p;
-    MarkdownPoint::Presentation presentation = p.parse("");
+    auto presentation = MarkdownPoint::MarkdownPresentationParser().parse("");
 
     EXPECT_EQ(presentation.slideCount(), 1);
 }
 
 TEST(markdown_parsing, can_parse_multiple_slides) {
-    MarkdownPoint::MarkdownPresentationParser p;
-    MarkdownPoint::Presentation presentation = p.parse("<==><==>");
+    auto presentation = MarkdownPoint::MarkdownPresentationParser().parse("<==><==>");
 
     EXPECT_EQ(presentation.slideCount(), 3);
 }
 
 TEST(markdown_parsing, can_parse_a_heading) {
-    MarkdownPoint::MarkdownPresentationParser p;
-    MarkdownPoint::Presentation presentation = p.parse("# Heading");
+    auto slide = givenAParsedPresentationSlide("# Heading");
 
-    MarkdownPoint::Slide *slide = presentation.slide(0);
-    EXPECT_EQ(slide->blockCount(), 1);
-    EXPECT_EQ(slide->block(0)->type(), "heading");
+    blocksAreOfTheFollowingTypes(slide, {"heading"});
 
-    MarkdownPoint::Heading *heading = dynamic_cast<MarkdownPoint::Heading *>(slide->block(0));
-    EXPECT_EQ(heading->size(), 1);
-    EXPECT_EQ(heading->text(), "Heading");
+    expectHeadingWithSizeAndText(slide->block<MarkdownPoint::Heading *>(0), 1, "Heading");
 }
 
 TEST(markdown_parsing, can_parse_a_heading_of_multiple_sizes) {
-    MarkdownPoint::MarkdownPresentationParser p;
-    MarkdownPoint::Presentation presentation = p.parse("# Heading\n## Heading 2\n### Heading 3\n#### Heading 4");
+    auto slide = givenAParsedPresentationSlide("# Heading\n## Heading 2\n### Heading 3\n#### Heading 4");
 
-    MarkdownPoint::Slide *slide = presentation.slide(0);
-    EXPECT_EQ(slide->blockCount(), 4);
-    EXPECT_EQ(slide->block(0)->type(), "heading");
+    blocksAreOfTheFollowingTypes(slide, {"heading", "heading", "heading", "heading"});
 
-    MarkdownPoint::Heading *heading = dynamic_cast<MarkdownPoint::Heading *>(slide->block(0));
-    EXPECT_EQ(heading->size(), 1);
-    EXPECT_EQ(heading->text(), "Heading");
-
-    heading = dynamic_cast<MarkdownPoint::Heading *>(slide->block(1));
-    EXPECT_EQ(heading->size(), 2);
-    EXPECT_EQ(heading->text(), "Heading 2");
-
-    heading = dynamic_cast<MarkdownPoint::Heading *>(slide->block(2));
-    EXPECT_EQ(heading->size(), 3);
-    EXPECT_EQ(heading->text(), "Heading 3");
-
-    heading = dynamic_cast<MarkdownPoint::Heading *>(slide->block(3));
-    EXPECT_EQ(heading->size(), 4);
-    EXPECT_EQ(heading->text(), "Heading 4");
+    expectHeadingWithSizeAndText(slide->block<MarkdownPoint::Heading *>(0), 1, "Heading");
+    expectHeadingWithSizeAndText(slide->block<MarkdownPoint::Heading *>(1), 2, "Heading 2");
+    expectHeadingWithSizeAndText(slide->block<MarkdownPoint::Heading *>(2), 3, "Heading 3");
+    expectHeadingWithSizeAndText(slide->block<MarkdownPoint::Heading *>(3), 4, "Heading 4");
 }
 
 TEST(markdown_parsing, can_parse_a_paragraph) {
-    MarkdownPoint::MarkdownPresentationParser p;
-    MarkdownPoint::Presentation presentation = p.parse("Paragraph text is boring");
+    auto slide = givenAParsedPresentationSlide("Paragraph text is boring");
 
-    MarkdownPoint::Slide *slide = presentation.slide(0);
-    EXPECT_EQ(slide->blockCount(), 1);
-    EXPECT_EQ(slide->block(0)->type(), "paragraph");
-
-    MarkdownPoint::Paragraph *paragraph = dynamic_cast<MarkdownPoint::Paragraph *>(slide->block(0));
-    EXPECT_EQ(paragraph->text(), "Paragraph text is boring");
+    expectParagraphWithText(slide->block<MarkdownPoint::Paragraph *>(0), "Paragraph text is boring");
 }
 
 
 TEST(markdown_parsing, can_parse_a_paragraph_and_heading) {
-    MarkdownPoint::MarkdownPresentationParser p;
-    MarkdownPoint::Presentation presentation = p.parse("# Heading\nParagraph text is boring");
+    auto slide = givenAParsedPresentationSlide("# Heading\nParagraph text is boring");
 
-    MarkdownPoint::Slide *slide = presentation.slide(0);
-    EXPECT_EQ(slide->blockCount(), 2);
-    EXPECT_EQ(slide->block(0)->type(), "heading");
+    expectHeadingWithSizeAndText(slide->block<MarkdownPoint::Heading *>(0), 1, "Heading");
 
-    MarkdownPoint::Heading *heading = dynamic_cast<MarkdownPoint::Heading *>(slide->block(0));
-    EXPECT_EQ(heading->size(), 1);
-    EXPECT_EQ(heading->text(), "Heading");
-
-    EXPECT_EQ(slide->block(1)->type(), "paragraph");
-    MarkdownPoint::Paragraph *paragraph = dynamic_cast<MarkdownPoint::Paragraph *>(slide->block(1));
-    EXPECT_EQ(paragraph->text(), "Paragraph text is boring");
+    expectParagraphWithText(slide->block<MarkdownPoint::Paragraph *>(1), "Paragraph text is boring");
 }
 
 TEST(markdown_parsing, can_parse_a_bullet_point) {
-    MarkdownPoint::MarkdownPresentationParser p;
-    MarkdownPoint::Presentation presentation = p.parse("* Bullet point\n+ Bullet point 2\n- Bullet point 3");
+    auto slide = givenAParsedPresentationSlide("* Bullet point\n+ Bullet point 2\n- Bullet point 3");
+    blocksAreOfTheFollowingTypes(slide, {"bulletpoint", "bulletpoint", "bulletpoint"});
 
-    MarkdownPoint::Slide *slide = presentation.slide(0);
-    EXPECT_EQ(slide->blockCount(), 3);
-    EXPECT_EQ(slide->block(0)->type(), "bulletpoint");
-    EXPECT_EQ(slide->block(1)->type(), "bulletpoint");
-    EXPECT_EQ(slide->block(2)->type(), "bulletpoint");
-
-    MarkdownPoint::BulletPoint *bulletPoint = dynamic_cast<MarkdownPoint::BulletPoint *>(slide->block(0));
-    EXPECT_EQ(bulletPoint->indentLevel(), 0);
-    EXPECT_EQ(bulletPoint->text(), "Bullet point");
-
-    bulletPoint = dynamic_cast<MarkdownPoint::BulletPoint *>(slide->block(1));
-    EXPECT_EQ(bulletPoint->indentLevel(), 0);
-    EXPECT_EQ(bulletPoint->text(), "Bullet point 2");
-
-    bulletPoint = dynamic_cast<MarkdownPoint::BulletPoint *>(slide->block(2));
-    EXPECT_EQ(bulletPoint->indentLevel(), 0);
-    EXPECT_EQ(bulletPoint->text(), "Bullet point 3");
+    expectBulletPointhWithIndentationAndText(slide->block<MarkdownPoint::BulletPoint *>(0), 0, "Bullet point");
+    expectBulletPointhWithIndentationAndText(slide->block<MarkdownPoint::BulletPoint *>(1), 0, "Bullet point 2");
+    expectBulletPointhWithIndentationAndText(slide->block<MarkdownPoint::BulletPoint *>(2), 0, "Bullet point 3");
 }
 
 
 TEST(markdown_parsing, can_parse_a_indented_bullet_points) {
-    MarkdownPoint::MarkdownPresentationParser p;
-    MarkdownPoint::Presentation presentation = p.parse("  * Bullet point\n    + Bullet point 2\n      - Bullet point 3");
+    auto slide = givenAParsedPresentationSlide("  * Bullet point\n    + Bullet point 2\n      - Bullet point 3");
 
-    MarkdownPoint::Slide *slide = presentation.slide(0);
-    EXPECT_EQ(slide->blockCount(), 3);
-    EXPECT_EQ(slide->block(0)->type(), "bulletpoint");
-    EXPECT_EQ(slide->block(1)->type(), "bulletpoint");
-    EXPECT_EQ(slide->block(2)->type(), "bulletpoint");
+    blocksAreOfTheFollowingTypes(slide, {"bulletpoint", "bulletpoint", "bulletpoint"});
 
-    MarkdownPoint::BulletPoint *bulletPoint = dynamic_cast<MarkdownPoint::BulletPoint *>(slide->block(0));
-    EXPECT_EQ(bulletPoint->indentLevel(), 1);
-    EXPECT_EQ(bulletPoint->text(), "Bullet point");
-
-    bulletPoint = dynamic_cast<MarkdownPoint::BulletPoint *>(slide->block(1));
-    EXPECT_EQ(bulletPoint->indentLevel(), 2);
-    EXPECT_EQ(bulletPoint->text(), "Bullet point 2");
-
-    bulletPoint = dynamic_cast<MarkdownPoint::BulletPoint *>(slide->block(2));
-    EXPECT_EQ(bulletPoint->indentLevel(), 3);
-    EXPECT_EQ(bulletPoint->text(), "Bullet point 3");
+    expectBulletPointhWithIndentationAndText(slide->block<MarkdownPoint::BulletPoint *>(0), 1, "Bullet point");
+    expectBulletPointhWithIndentationAndText(slide->block<MarkdownPoint::BulletPoint *>(1), 2, "Bullet point 2");
+    expectBulletPointhWithIndentationAndText(slide->block<MarkdownPoint::BulletPoint *>(2), 3, "Bullet point 3");
 }

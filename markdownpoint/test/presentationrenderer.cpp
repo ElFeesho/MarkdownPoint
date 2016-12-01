@@ -36,10 +36,18 @@ public:
 };
 
 SpyRenderer *spyRenderer = new SpyRenderer();
+MarkdownPoint::PresentationRenderer renderer(spyRenderer);
+
+MarkdownPoint::Presentation givenAPresentationSlideContaining(MarkdownPoint::Block *block)
+{
+    MarkdownPoint::Presentation presentation;
+
+    presentation.addSlide()->addBlock(block);
+
+    return presentation;
+}
 
 TEST(presentation_renderer, will_delegate_creation_of_slide) {
-    MarkdownPoint::PresentationRenderer renderer(spyRenderer);
-
     MarkdownPoint::Presentation presentation;
     presentation.addSlide();
 
@@ -49,11 +57,7 @@ TEST(presentation_renderer, will_delegate_creation_of_slide) {
 }
 
 TEST(presentation_renderer, will_render_a_header) {
-    MarkdownPoint::PresentationRenderer renderer(spyRenderer);
-
-    MarkdownPoint::Presentation presentation;
-    MarkdownPoint::Slide *slide = presentation.addSlide();
-    slide->addBlock(new MarkdownPoint::Heading("Expected Header"));
+    auto presentation = givenAPresentationSlideContaining(new MarkdownPoint::Heading("Expected Header"));
 
     renderer.render(presentation);
 
@@ -61,11 +65,7 @@ TEST(presentation_renderer, will_render_a_header) {
 }
 
 TEST(presentation_renderer, will_render_a_paragraph){
-    MarkdownPoint::PresentationRenderer renderer(spyRenderer);
-
-    MarkdownPoint::Presentation presentation;
-    MarkdownPoint::Slide *slide = presentation.addSlide();
-    slide->addBlock(new MarkdownPoint::Paragraph("Expected Paragraph"));
+    auto presentation = givenAPresentationSlideContaining(new MarkdownPoint::Paragraph("Expected Paragraph"));
 
     renderer.render(presentation);
 
@@ -73,11 +73,7 @@ TEST(presentation_renderer, will_render_a_paragraph){
 }
 
 TEST(presentation_renderer, will_render_a_bullet_point){
-    MarkdownPoint::PresentationRenderer renderer(spyRenderer);
-
-    MarkdownPoint::Presentation presentation;
-    MarkdownPoint::Slide *slide = presentation.addSlide();
-    slide->addBlock(new MarkdownPoint::BulletPoint("Bullet Point"));
+    auto presentation = givenAPresentationSlideContaining(new MarkdownPoint::BulletPoint("Bullet Point"));
 
     renderer.render(presentation);
 

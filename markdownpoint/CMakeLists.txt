@@ -19,3 +19,5 @@ add_library(libmarkdownpoint ${SOURCES})
 target_include_directories(libmarkdownpoint PUBLIC include)
 
 target_link_libraries(markdown_parse_test gtest gtest_main libmarkdownpoint)
+
+target_compile_features(markdown_parse_test PRIVATE ${CXX_FEATURE_FLAGS})

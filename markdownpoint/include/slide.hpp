@@ -18,6 +18,12 @@ namespace MarkdownPoint {
 
         Block *block(uint32_t idx);
 
+        template<typename T>
+        T block(uint32_t idx)
+        {
+            return dynamic_cast<T>(_blocks[idx]);
+        }
+
         ssize_t blockCount();
 
     private:
