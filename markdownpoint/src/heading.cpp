@@ -11,15 +11,15 @@ namespace MarkdownPoint {
 
     }
 
-    std::string Heading::type() {
+    std::string Heading::type() const {
         return "heading";
     }
 
-    uint32_t Heading::size() {
+    uint32_t Heading::size() const {
         return _size;
     }
 
-    std::string Heading::text() {
+    std::string Heading::text() const {
         return _text;
     }
 }

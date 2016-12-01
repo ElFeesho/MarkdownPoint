@@ -14,11 +14,11 @@ namespace MarkdownPoint {
     public:
         Heading(const std::string &text, uint32_t size = 1);
 
-        virtual std::string type();
+        virtual std::string type() const;
 
-        unsigned int size();
+        unsigned int size() const;
 
-        std::string text();
+        std::string text() const;
 
     private:
         std::string _text;

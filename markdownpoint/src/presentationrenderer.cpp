@@ -17,11 +17,11 @@ namespace MarkdownPoint {
             for (uint32_t k = 0; k < slide->blockCount(); k++) {
                 Block *block = slide->block(k);
                 if (block->type() == "heading") {
-                    _renderer->renderHeading(dynamic_cast<Heading *>(block));
+                    _renderer->renderHeading(dynamic_cast<Heading&>(*block));
                 } else if (block->type() == "paragraph") {
-                    _renderer->renderParagraph(dynamic_cast<Paragraph *>(block));
+                    _renderer->renderParagraph(dynamic_cast<Paragraph&>(*block));
                 } else if (block->type() == "bulletpoint") {
-                    _renderer->renderBulletPoint(dynamic_cast<BulletPoint *>(block));
+                    _renderer->renderBulletPoint(dynamic_cast<BulletPoint&>(*block));
                 }
             }
         }

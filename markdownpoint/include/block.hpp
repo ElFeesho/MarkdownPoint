@@ -12,7 +12,7 @@ namespace MarkdownPoint {
     public:
         Block() {}
         virtual ~Block(){}
-        virtual std::string type() = 0;
+        virtual std::string type() const = 0;
     };
 }
 

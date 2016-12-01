@@ -17,15 +17,15 @@ public:
         renderPageCalled = true;
     }
 
-    void renderHeading(::MarkdownPoint::Heading *heading) {
+    void renderHeading(const MarkdownPoint::Heading &heading) {
         renderHeadingCalled = true;
     }
 
-    void renderParagraph(MarkdownPoint::Paragraph *paragraph) {
+    void renderParagraph(const MarkdownPoint::Paragraph &paragraph) {
         renderParagraphCalled = true;
     }
 
-    void renderBulletPoint(MarkdownPoint::BulletPoint *bulletPoint) {
+    void renderBulletPoint(const MarkdownPoint::BulletPoint &bulletPoint) {
         renderBulletPointCalled = true;
     }
 

@@ -24,18 +24,18 @@ public:
         addNewPage();
     }
 
-    void renderBulletPoint(MarkdownPoint::BulletPoint *bulletPoint) override {
+    void renderBulletPoint(const MarkdownPoint::BulletPoint &bulletPoint) override {
 
-        if (bulletPoint->indentLevel() < 2)
+        if (bulletPoint.indentLevel() < 2)
         {
-            HPDF_Page_Circle(currentPage, textBoundaryOffset + bulletPoint->indentLevel() * 15 + 5, HPDF_Page_GetHeight(currentPage) - textYPosition - 9 - 16, 3);
+            HPDF_Page_Circle(currentPage, textBoundaryOffset + bulletPoint.indentLevel() * 15 + 5, HPDF_Page_GetHeight(currentPage) - textYPosition - 9 - 16, 3);
         }
         else
         {
-            HPDF_Page_Rectangle(currentPage, textBoundaryOffset + bulletPoint->indentLevel() * 15 + 3, HPDF_Page_GetHeight(currentPage) - textYPosition - 12 - 16, 6, 6);
+            HPDF_Page_Rectangle(currentPage, textBoundaryOffset + bulletPoint.indentLevel() * 15 + 3, HPDF_Page_GetHeight(currentPage) - textYPosition - 12 - 16, 6, 6);
         }
 
-        if (bulletPoint->indentLevel() == 1)
+        if (bulletPoint.indentLevel() == 1)
         {
             HPDF_Page_Stroke(currentPage);
         }
@@ -43,30 +43,30 @@ public:
         {
             HPDF_Page_Fill(currentPage);
         }
-        renderLineOfText(bulletPoint->text(), 15 * (bulletPoint->indentLevel()+1));
+        renderLineOfText(bulletPoint.text(), 15 * (bulletPoint.indentLevel()+1));
     }
 
-    void renderHeading(MarkdownPoint::Heading *heading) override {
-        unsigned int headingSize = heading->size() - 1;
+    void renderHeading(const MarkdownPoint::Heading &heading) override {
+        unsigned int headingSize = heading.size() - 1;
         int fontSize = sizes[headingSize];
         int margin = margins[headingSize];
         HPDF_Page_SetFontAndSize(currentPage, helvetica, fontSize);
-        float tw = HPDF_Page_TextWidth(currentPage, heading->text().c_str());
+        float tw = HPDF_Page_TextWidth(currentPage, heading.text().c_str());
         HPDF_Page_SetRGBFill(currentPage, 0.8, 0.8, 0.8);
         HPDF_Page_BeginText(currentPage);
         uint32_t len;
-        HPDF_Page_TextRect(currentPage, textBoundaryOffset, HPDF_Page_GetHeight(currentPage) - textYPosition - (margin - fontSize), textBoundaryOffset + textBoundaryWidth, textBoundaryOffset, heading->text().c_str(), headingSize == 0 ? HPDF_TALIGN_CENTER : HPDF_TALIGN_LEFT, &len);
+        HPDF_Page_TextRect(currentPage, textBoundaryOffset, HPDF_Page_GetHeight(currentPage) - textYPosition - (margin - fontSize), textBoundaryOffset + textBoundaryWidth, textBoundaryOffset, heading.text().c_str(), headingSize == 0 ? HPDF_TALIGN_CENTER : HPDF_TALIGN_LEFT, &len);
         HPDF_Page_EndText(currentPage);
 
         textYPosition += margin;
     }
 
-    void renderParagraph(MarkdownPoint::Paragraph *paragraph) override {
-        const char *text = paragraph->text().c_str();
+    void renderParagraph(const MarkdownPoint::Paragraph &paragraph) override {
+        const char *text = paragraph.text().c_str();
         HPDF_REAL width = 0;
 
-        std::vector<std::string> textLines = splitStringOnPredicate(paragraph->text(), [&](std::string input) -> unsigned long {
-            return HPDF_Font_MeasureText(helvetica, (const HPDF_BYTE *) input.c_str(), (HPDF_UINT) paragraph->text().size(), textBoundaryWidth, 16, 0, 0, true, &width);
+        std::vector<std::string> textLines = splitStringOnPredicate(paragraph.text(), [&](std::string input) -> unsigned long {
+            return HPDF_Font_MeasureText(helvetica, (const HPDF_BYTE *) input.c_str(), (HPDF_UINT) paragraph.text().size(), textBoundaryWidth, 16, 0, 0, true, &width);
         });
 
         for(std::string line : textLines)

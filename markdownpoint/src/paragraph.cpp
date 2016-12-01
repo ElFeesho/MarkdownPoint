@@ -8,11 +8,11 @@ namespace MarkdownPoint {
     Paragraph::Paragraph(const std::string &text) : _text(text) {
     }
 
-    std::string Paragraph::type() {
+    std::string Paragraph::type() const {
         return "paragraph";
     }
 
-    std::string Paragraph::text() {
+    std::string Paragraph::text() const {
         return _text;
     }
 }

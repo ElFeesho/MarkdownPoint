@@ -13,9 +13,9 @@ namespace MarkdownPoint {
     public:
         Paragraph(const std::string &text);
 
-        std::string type();
+        std::string type() const;
 
-        std::string text();
+        std::string text() const;
 
     private:
         std::string _text;

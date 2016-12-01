@@ -16,9 +16,9 @@ namespace MarkdownPoint {
     public:
         virtual ~Renderer(){}
         virtual void renderPage(Slide *slide) = 0;
-        virtual void renderHeading(Heading *heading) = 0;
-        virtual void renderParagraph(Paragraph *paragraph) = 0;
-        virtual void renderBulletPoint(BulletPoint *bulletPoint) = 0;
+        virtual void renderHeading(const Heading &heading) = 0;
+        virtual void renderParagraph(const Paragraph &paragraph) = 0;
+        virtual void renderBulletPoint(const BulletPoint &bulletPoint) = 0;
     };
 
     class PresentationRenderer {
