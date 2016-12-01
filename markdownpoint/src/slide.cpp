@@ -9,16 +9,16 @@ namespace MarkdownPoint {
 
     }
 
-    Block *Slide::block(uint32_t idx) {
-        return _blocks[idx];
+    Element *Slide::element(uint32_t idx) {
+        return _elements[idx];
     }
 
-    ssize_t Slide::blockCount() {
-        return _blocks.size();
+    ssize_t Slide::elementCount() {
+        return _elements.size();
     }
 
 
-    void Slide::addBlock(Block *block) {
-        _blocks.push_back(block);
+    void Slide::addElement(Element *block) {
+        _elements.push_back(block);
     }
 }

@@ -14,7 +14,7 @@ MarkdownPoint::Slide *givenAParsedPresentationSlide(const std::string &markdown)
 
 void blocksAreOfTheFollowingTypes(MarkdownPoint::Slide *slide, std::vector<const std::string> types) {
     for (uint32_t i = 0; i < types.size(); i++) {
-        EXPECT_EQ(slide->block(i)->type(), types[i]);
+        EXPECT_EQ(slide->element(i)->type(), types[i]);
     }
 }
 
@@ -52,7 +52,7 @@ TEST(markdown_parsing, can_parse_a_heading) {
 
     blocksAreOfTheFollowingTypes(slide, {"heading"});
 
-    expectHeadingWithSizeAndText(slide->block<MarkdownPoint::Heading *>(0), 1, "Heading");
+    expectHeadingWithSizeAndText(slide->element<MarkdownPoint::Heading *>(0), 1, "Heading");
 }
 
 TEST(markdown_parsing, can_parse_a_heading_of_multiple_sizes) {
@@ -60,34 +60,34 @@ TEST(markdown_parsing, can_parse_a_heading_of_multiple_sizes) {
 
     blocksAreOfTheFollowingTypes(slide, {"heading", "heading", "heading", "heading"});
 
-    expectHeadingWithSizeAndText(slide->block<MarkdownPoint::Heading *>(0), 1, "Heading");
-    expectHeadingWithSizeAndText(slide->block<MarkdownPoint::Heading *>(1), 2, "Heading 2");
-    expectHeadingWithSizeAndText(slide->block<MarkdownPoint::Heading *>(2), 3, "Heading 3");
-    expectHeadingWithSizeAndText(slide->block<MarkdownPoint::Heading *>(3), 4, "Heading 4");
+    expectHeadingWithSizeAndText(slide->element<MarkdownPoint::Heading *>(0), 1, "Heading");
+    expectHeadingWithSizeAndText(slide->element<MarkdownPoint::Heading *>(1), 2, "Heading 2");
+    expectHeadingWithSizeAndText(slide->element<MarkdownPoint::Heading *>(2), 3, "Heading 3");
+    expectHeadingWithSizeAndText(slide->element<MarkdownPoint::Heading *>(3), 4, "Heading 4");
 }
 
 TEST(markdown_parsing, can_parse_a_paragraph) {
     auto slide = givenAParsedPresentationSlide("Paragraph text is boring");
 
-    expectParagraphWithText(slide->block<MarkdownPoint::Paragraph *>(0), "Paragraph text is boring");
+    expectParagraphWithText(slide->element<MarkdownPoint::Paragraph *>(0), "Paragraph text is boring");
 }
 
 
 TEST(markdown_parsing, can_parse_a_paragraph_and_heading) {
     auto slide = givenAParsedPresentationSlide("# Heading\nParagraph text is boring");
 
-    expectHeadingWithSizeAndText(slide->block<MarkdownPoint::Heading *>(0), 1, "Heading");
+    expectHeadingWithSizeAndText(slide->element<MarkdownPoint::Heading *>(0), 1, "Heading");
 
-    expectParagraphWithText(slide->block<MarkdownPoint::Paragraph *>(1), "Paragraph text is boring");
+    expectParagraphWithText(slide->element<MarkdownPoint::Paragraph *>(1), "Paragraph text is boring");
 }
 
 TEST(markdown_parsing, can_parse_a_bullet_point) {
     auto slide = givenAParsedPresentationSlide("* Bullet point\n+ Bullet point 2\n- Bullet point 3");
     blocksAreOfTheFollowingTypes(slide, {"bulletpoint", "bulletpoint", "bulletpoint"});
 
-    expectBulletPointhWithIndentationAndText(slide->block<MarkdownPoint::BulletPoint *>(0), 0, "Bullet point");
-    expectBulletPointhWithIndentationAndText(slide->block<MarkdownPoint::BulletPoint *>(1), 0, "Bullet point 2");
-    expectBulletPointhWithIndentationAndText(slide->block<MarkdownPoint::BulletPoint *>(2), 0, "Bullet point 3");
+    expectBulletPointhWithIndentationAndText(slide->element<MarkdownPoint::BulletPoint *>(0), 0, "Bullet point");
+    expectBulletPointhWithIndentationAndText(slide->element<MarkdownPoint::BulletPoint *>(1), 0, "Bullet point 2");
+    expectBulletPointhWithIndentationAndText(slide->element<MarkdownPoint::BulletPoint *>(2), 0, "Bullet point 3");
 }
 
 
@@ -96,7 +96,7 @@ TEST(markdown_parsing, can_parse_a_indented_bullet_points) {
 
     blocksAreOfTheFollowingTypes(slide, {"bulletpoint", "bulletpoint", "bulletpoint"});
 
-    expectBulletPointhWithIndentationAndText(slide->block<MarkdownPoint::BulletPoint *>(0), 1, "Bullet point");
-    expectBulletPointhWithIndentationAndText(slide->block<MarkdownPoint::BulletPoint *>(1), 2, "Bullet point 2");
-    expectBulletPointhWithIndentationAndText(slide->block<MarkdownPoint::BulletPoint *>(2), 3, "Bullet point 3");
+    expectBulletPointhWithIndentationAndText(slide->element<MarkdownPoint::BulletPoint *>(0), 1, "Bullet point");
+    expectBulletPointhWithIndentationAndText(slide->element<MarkdownPoint::BulletPoint *>(1), 2, "Bullet point 2");
+    expectBulletPointhWithIndentationAndText(slide->element<MarkdownPoint::BulletPoint *>(2), 3, "Bullet point 3");
 }

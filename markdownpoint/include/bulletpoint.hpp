@@ -8,7 +8,7 @@
 #include <block.hpp>
 
 namespace MarkdownPoint {
-    class BulletPoint : public Block
+    class BulletPoint : public Element
     {
     public:
         BulletPoint(const std::string &text, uint32_t indentLevel = 0);

@@ -38,11 +38,11 @@ public:
 SpyRenderer *spyRenderer = new SpyRenderer();
 MarkdownPoint::PresentationRenderer renderer(spyRenderer);
 
-MarkdownPoint::Presentation givenAPresentationSlideContaining(MarkdownPoint::Block *block)
+MarkdownPoint::Presentation givenAPresentationSlideContaining(MarkdownPoint::Element *block)
 {
     MarkdownPoint::Presentation presentation;
 
-    presentation.addSlide()->addBlock(block);
+    presentation.addSlide()->addElement(block);
 
     return presentation;
 }

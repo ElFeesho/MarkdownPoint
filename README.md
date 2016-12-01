@@ -31,12 +31,12 @@ Using the following [markdown document](https://github.com/adam-p/markdown-here/
   * [ ] Inline images with reference text
  * Pre-formatted text
   * [ ] Inline code formatting
-  * [ ] Block code formatting
+  * [ ] Element code formatting
  * Tables
   * [ ] Inline table
   * [ ] Table cell centre alignment
   * [ ] Table cell right alignment
- * Block Quotes
+ * Element Quotes
   * [ ] Unformatted text
   * [ ] Containing bold text
   * [ ] Containing underline text

@@ -8,10 +8,10 @@
 #include <string>
 
 namespace MarkdownPoint {
-    class Block {
+    class Element {
     public:
-        Block() {}
-        virtual ~Block(){}
+        Element() {}
+        virtual ~Element(){}
         virtual std::string type() const = 0;
     };
 }

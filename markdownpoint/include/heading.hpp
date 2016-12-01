@@ -10,7 +10,7 @@
 
 namespace MarkdownPoint {
 
-    class Heading : public MarkdownPoint::Block {
+    class Heading : public MarkdownPoint::Element {
     public:
         Heading(const std::string &text, uint32_t size = 1);
 

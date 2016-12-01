@@ -14,8 +14,8 @@ namespace MarkdownPoint {
         for (uint32_t i = 0; i < p.slideCount(); i++) {
             Slide *slide = p.slide(i);
             _renderer->renderPage(slide);
-            for (uint32_t k = 0; k < slide->blockCount(); k++) {
-                Block *block = slide->block(k);
+            for (uint32_t k = 0; k < slide->elementCount(); k++) {
+                Element *block = slide->element(k);
                 if (block->type() == "heading") {
                     _renderer->renderHeading(dynamic_cast<Heading&>(*block));
                 } else if (block->type() == "paragraph") {

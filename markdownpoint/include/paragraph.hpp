@@ -9,7 +9,7 @@
 
 namespace MarkdownPoint {
 
-    class Paragraph : public Block {
+    class Paragraph : public Element {
     public:
         Paragraph(const std::string &text);
 

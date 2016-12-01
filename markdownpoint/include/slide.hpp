@@ -14,20 +14,20 @@ namespace MarkdownPoint {
     public:
         Slide();
 
-        void addBlock(Block *block);
+        void addElement(Element *block);
 
-        Block *block(uint32_t idx);
+        Element *element(uint32_t idx);
 
         template<typename T>
-        T block(uint32_t idx)
+        T element(uint32_t idx)
         {
-            return dynamic_cast<T>(_blocks[idx]);
+            return dynamic_cast<T>(_elements[idx]);
         }
 
-        ssize_t blockCount();
+        ssize_t elementCount();
 
     private:
-        std::vector<Block *> _blocks;
+        std::vector<Element *> _elements;
     };
 }
 
