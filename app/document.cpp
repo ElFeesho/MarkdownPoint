@@ -2,14 +2,12 @@
 // Created by Christopher Sawczuk on 01/12/2016.
 //
 
+#include <iostream>
 #include "document.hpp"
 
 namespace HPDF {
-    Page::Page(Document *forDocument) : _page(std::shared_ptr<RawHPDF_Page>(HPDF_AddPage(forDocument->_doc.get()),[=](HPDF_Page page) {
-        HPDF_Dict_Free(page);
-    })){
-
-    }
+    Page::Page(Document *forDocument) : _page(std::shared_ptr<RawHPDF_Page>(HPDF_AddPage(forDocument->_doc.get()),[=](HPDF_Page page) {}) )
+    {}
 
     void Page::setFillColour(const Colour &colour) {
         HPDF_Page_SetRGBFill(_page.get(), colour.red(), colour.green(), colour.blue());
@@ -41,7 +39,7 @@ namespace HPDF {
 
 
     Document::Document() :
-            _doc(std::unique_ptr<RawHPDF_Doc, std::function<void(RawHPDF_Doc*)>>(HPDF_New([](HPDF_STATUS, HPDF_STATUS, void *){}, nullptr), HPDF_Free))
+            _doc(unique_doc_ptr(HPDF_New([](HPDF_STATUS, HPDF_STATUS, void *){}, nullptr), HPDF_Free))
     {
     }
 

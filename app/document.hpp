@@ -51,7 +51,8 @@ namespace HPDF {
 
         friend class Page;
     private:
-        std::unique_ptr<RawHPDF_Doc, std::function<void(RawHPDF_Doc*)>> _doc;
+        using unique_doc_ptr = std::unique_ptr<RawHPDF_Doc, std::function<void(RawHPDF_Doc*)>>;
+        unique_doc_ptr _doc;
 
         std::vector<Page> _pages;
     };

@@ -8,7 +8,7 @@ include_directories(${gtest_SOURCE_DIR}/include)
 
 enable_testing()
 
-add_executable(markdown_parse_test test/markdownparse.cpp test/presentationrenderer.cpp)
+add_executable(markdown_parse_test test/markdownparse.cpp test/presentationrenderer.cpp test/markdownpointtest.cpp)
 
 add_test(markdown_parse_test markdown_parse_test)
 

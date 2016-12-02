@@ -12,7 +12,19 @@
 #include <bulletpoint.hpp>
 
 namespace MarkdownPoint {
+    using split_predicate = unsigned long(*)(const std::string&);
 
+    std::vector<std::string> splitString(const std::string &input, split_predicate = [](const std::string& input) -> unsigned long {
+        unsigned long newLinePosition = input.find("\n");
+        if (newLinePosition != std::string::npos)
+        {
+            return newLinePosition + 1;
+        }
+        else
+        {
+            return input.length();
+        }
+    });
 }
 
 #endif
