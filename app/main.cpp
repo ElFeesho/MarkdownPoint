@@ -13,7 +13,6 @@ public:
         }, nullptr);
 
         helvetica = HPDF_GetFont(pdf, "Helvetica", NULL);
-        courier = HPDF_GetFont(pdf, "Courier", NULL);
     }
 
     ~HPdfPresentationRenderer() override {
@@ -65,7 +64,7 @@ public:
         const char *text = paragraph.text().c_str();
         HPDF_REAL width = 0;
 
-        std::vector<std::string> textLines = splitStringOnPredicate(paragraph.text(), [&](std::string input) -> unsigned long {
+        std::vector<std::string> textLines = MarkdownPoint::splitString(paragraph.text(), [&](const std::string &input) -> unsigned long {
             return HPDF_Font_MeasureText(helvetica, (const HPDF_BYTE *) input.c_str(), (HPDF_UINT) paragraph.text().size(), textBoundaryWidth, 16, 0, 0, true, &width);
         });
 
@@ -91,20 +90,6 @@ public:
         textYPosition += 20;
     }
 
-    std::vector<std::string> splitStringOnPredicate(std::string input, std::function<unsigned long(std::string)> predicate)
-    {
-        std::vector<std::string> result;
-
-        while (input.size() > 0)
-        {
-            std::string chunk = input.substr(0, predicate(input));
-            result.push_back(chunk);
-            input = input.substr(chunk.size());
-        }
-
-        return result;
-    }
-
     void writeToFile(const std::string &filename) {
         HPDF_SaveToFile(pdf, filename.c_str());
     }
@@ -125,7 +110,6 @@ private:
     HPDF_Doc pdf;
     HPDF_Page currentPage;
     HPDF_Font helvetica;
-    HPDF_Font courier;
 
     HPDF_REAL textBoundaryWidth;
     HPDF_REAL textBoundaryOffset { 100 };
