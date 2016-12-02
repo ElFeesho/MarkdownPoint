@@ -1,8 +1,9 @@
 #include <iostream>
 #include <markdownpoint.hpp>
 #include <hpdf.h>
-#include <string>
 #include <fstream>
+
+#include "document.hpp"
 
 class HPdfPresentationRenderer : public MarkdownPoint::Renderer {
 public:
@@ -147,10 +148,21 @@ int main(int argc, char **argv) {
 
     MarkdownPoint::MarkdownPresentationParser parser;
     MarkdownPoint::Presentation presentation = parser.parse(markdown);
+
     HPdfPresentationRenderer renderer;
     MarkdownPoint::PresentationRenderer presentationRenderer(&renderer);
     presentationRenderer.render(presentation);
 
     renderer.writeToFile(argv[2]);
+    
+    HPDF::Document document;
+    HPDF::Page page = document.addPage();
+    page.setSize(HPDF_PAGE_SIZE_A4, HPDF_PAGE_LANDSCAPE);
+    page.setFillColour(0x333333_rgb);
+    page.drawRectangle(0, 0, page.width(), page.height());
+    page.fill();
+
+    document.writeToFile("test2.pdf");
+
     return 0;
 }

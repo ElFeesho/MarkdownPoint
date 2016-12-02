@@ -6,7 +6,7 @@ if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
-set(SOURCES main.cpp)
+set(SOURCES main.cpp document.cpp document.hpp)
 
 add_executable(markdownpoint ${SOURCES})
 
