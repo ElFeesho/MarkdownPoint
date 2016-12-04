@@ -20,23 +20,41 @@ namespace HPDF {
     class Page;
     class Colour;
 
+    class DrawContext {
+    public:
+        void rectangle(int32_t x, int32_t y, int32_t w, int32_t h);
+        void circle(int32_t x, int32_t y, float radius);
+        int32_t width();
+        int32_t height();
+        friend class Page;
+    private:
+        DrawContext(Page &target);
+        Page &_target;
+    };
+
     class Page {
     public:
-        Page(Document *forDocument);
+        Page(Document *forDocument, HPDF_PageSizes pageSize, HPDF_PageDirection orientation);
 
         void setFillColour(const Colour &colour);
 
         void setStrokeColour(const Colour &colour);
 
-        void setSize(HPDF_PageSizes size, _HPDF_PageDirection orientation);
-
         void drawRectangle(int32_t x, int32_t y, int32_t w, int32_t h);
 
-        float width();
+        void drawCircle(int32_t x, int32_t y, float radius);
 
-        float height();
+        int32_t width();
+
+        int32_t height();
 
         void fill();
+
+        void stroke();
+
+        void strokeWithColour(const Colour &colour, std::function<void(DrawContext &)> operations);
+
+        void fillWithColour(const Colour &colour, std::function<void(DrawContext &)> operations);
     private:
         std::shared_ptr<RawHPDF_Page> _page;
     };
@@ -45,7 +63,7 @@ namespace HPDF {
     public:
         Document();
 
-        Page &addPage();
+        Page &addPage(HPDF_PageSizes pageSize, HPDF_PageDirection orientation);
 
         void writeToFile(const std::string &filename);
 

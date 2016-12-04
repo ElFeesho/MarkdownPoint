@@ -140,11 +140,16 @@ int main(int argc, char **argv) {
     renderer.writeToFile(argv[2]);
     
     HPDF::Document document;
-    HPDF::Page page = document.addPage();
-    page.setSize(HPDF_PAGE_SIZE_A4, HPDF_PAGE_LANDSCAPE);
-    page.setFillColour(0x333333_rgb);
-    page.drawRectangle(0, 0, page.width(), page.height());
-    page.fill();
+    HPDF::Page page = document.addPage(HPDF_PAGE_SIZE_A4, HPDF_PAGE_LANDSCAPE);
+
+    page.fillWithColour(0xcccccc_rgb, [](HPDF::DrawContext &ctx) {
+        ctx.rectangle(0, 0, ctx.width(), ctx.height());
+    });
+
+    page.strokeWithColour(0x000000_rgb, [](HPDF::DrawContext &ctx) {
+        ctx.rectangle(20, 20, 50, 50);
+        ctx.circle(50, 50, 25.f);
+    });
 
     document.writeToFile("test2.pdf");
 
