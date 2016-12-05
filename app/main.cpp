@@ -7,16 +7,8 @@
 
 class HPdfPresentationRenderer : public MarkdownPoint::Renderer {
 public:
-    HPdfPresentationRenderer() {
-        pdf = HPDF_New([](HPDF_STATUS error_no, HPDF_STATUS detail_no, void *user_data) {
-            std::cerr << "Error (" << error_no << ", " << detail_no << ")" << std::endl;
-        }, nullptr);
+    HPdfPresentationRenderer() : _doc{}, _font{_doc.loadFont("Helvetica")} {
 
-        helvetica = HPDF_GetFont(pdf, "Helvetica", NULL);
-    }
-
-    ~HPdfPresentationRenderer() override {
-        HPDF_Free(pdf);
     }
 
     void renderPage(MarkdownPoint::Slide *slide) override {
@@ -25,102 +17,82 @@ public:
 
     void renderBulletPoint(const MarkdownPoint::BulletPoint &bulletPoint) override {
 
-        if (bulletPoint.indentLevel() < 2)
-        {
-            HPDF_Page_Circle(currentPage, textBoundaryOffset + bulletPoint.indentLevel() * 15 + 5, HPDF_Page_GetHeight(currentPage) - textYPosition - 9 - 16, 3);
-        }
-        else
-        {
-            HPDF_Page_Rectangle(currentPage, textBoundaryOffset + bulletPoint.indentLevel() * 15 + 3, HPDF_Page_GetHeight(currentPage) - textYPosition - 12 - 16, 6, 6);
+        if (bulletPoint.indentLevel() < 2) {
+            HPDF::Page::GeometricDrawOperation op = [&](HPDF::DrawContext &ctx) {
+                ctx.circle(textBoundaryOffset + bulletPoint.indentLevel() * 15 + 5, ctx.height() - textYPosition - 10, 3);
+            };
+            if (bulletPoint.indentLevel() == 0)
+            {
+                getCurrentPage().fillWithColour(textColour, op);
+            }
+            else
+            {
+                getCurrentPage().strokeWithColour(textColour, op);
+            }
+        } else {
+            getCurrentPage().fillWithColour(textColour, [&](HPDF::DrawContext &ctx) {
+                ctx.rectangle(textBoundaryOffset + bulletPoint.indentLevel() * 15 + 2, ctx.height() - textYPosition - 12, 6, 6);
+            });
         }
 
-        if (bulletPoint.indentLevel() == 1)
-        {
-            HPDF_Page_Stroke(currentPage);
-        }
-        else
-        {
-            HPDF_Page_Fill(currentPage);
-        }
-        renderLineOfText(bulletPoint.text(), 15 * (bulletPoint.indentLevel()+1));
+        renderLineOfText(bulletPoint.text(), (bulletPoint.indentLevel() + 1) * 3 + 1);
     }
 
     void renderHeading(const MarkdownPoint::Heading &heading) override {
         unsigned int headingSize = heading.size() - 1;
         int fontSize = sizes[headingSize];
         int margin = margins[headingSize];
-        HPDF_Page_SetFontAndSize(currentPage, helvetica, fontSize);
-        float tw = HPDF_Page_TextWidth(currentPage, heading.text().c_str());
-        HPDF_Page_SetRGBFill(currentPage, 0.8, 0.8, 0.8);
-        HPDF_Page_BeginText(currentPage);
-        uint32_t len;
-        HPDF_Page_TextRect(currentPage, textBoundaryOffset, HPDF_Page_GetHeight(currentPage) - textYPosition - (margin - fontSize), textBoundaryOffset + textBoundaryWidth, textBoundaryOffset, heading.text().c_str(), headingSize == 0 ? HPDF_TALIGN_CENTER : HPDF_TALIGN_LEFT, &len);
-        HPDF_Page_EndText(currentPage);
-
-        textYPosition += margin;
+        getCurrentPage().textWithColour(textColour, [&](HPDF::DrawContext &ctx) {
+            textYPosition += ctx.text(_font, heading.text(), textBoundaryOffset, ctx.height() - textYPosition,
+                                      ctx.width() - textBoundaryOffset*2, fontSize, heading.size() == 1 ? HPDF_TALIGN_CENTER : HPDF_TALIGN_LEFT);
+            textYPosition += margin-fontSize;
+        });
     }
 
     void renderParagraph(const MarkdownPoint::Paragraph &paragraph) override {
-        const char *text = paragraph.text().c_str();
-        HPDF_REAL width = 0;
-
-        std::vector<std::string> textLines = MarkdownPoint::splitString(paragraph.text(), [&](const std::string &input) -> unsigned long {
-            return HPDF_Font_MeasureText(helvetica, (const HPDF_BYTE *) input.c_str(), (HPDF_UINT) paragraph.text().size(), textBoundaryWidth, 16, 0, 0, true, &width);
-        });
-
-        for(std::string line : textLines)
-        {
-            renderLineOfText(line);
-        }
-
-        if (textLines.size() == 0)
-        {
-            textYPosition += 20;
-        }
+        renderLineOfText(paragraph.text());
     }
 
     void renderLineOfText(const std::string &line, uint32_t textIndent = 0) {
-        HPDF_UINT len = 0;
-        HPDF_Page_SetRGBFill(currentPage, 0.8, 0.8, 0.8);
-        int fontSize = 16;
-        HPDF_Page_SetFontAndSize(currentPage, helvetica, fontSize);
-        HPDF_Page_BeginText(currentPage);
-        HPDF_Page_TextRect(currentPage, textBoundaryOffset + textIndent, HPDF_Page_GetHeight(currentPage) - textYPosition - fontSize, textBoundaryOffset + textBoundaryWidth, textBoundaryOffset, line.c_str(), HPDF_TALIGN_LEFT, &len);
-        HPDF_Page_EndText(currentPage);
-        textYPosition += 20;
+        getCurrentPage().textWithColour(textColour, [&](HPDF::DrawContext &ctx) {
+            textYPosition += ctx.text(_font, line, textBoundaryOffset + textIndent * 5, ctx.height() - textYPosition, ctx.width() - textBoundaryOffset * 2, 16);
+        });
+    }
+
+    HPDF::Page &getCurrentPage() {
+        return _doc.page(_pageCount - 1);
     }
 
     void writeToFile(const std::string &filename) {
-        HPDF_SaveToFile(pdf, filename.c_str());
+        _doc.writeToFile(filename);
     }
 
 private:
     void addNewPage() {
-        currentPage = HPDF_AddPage(pdf);
-        HPDF_Page_SetSize(currentPage, HPDF_PAGE_SIZE_A4, HPDF_PAGE_LANDSCAPE);
-        HPDF_Page_SetRGBFill(currentPage, 0.3, 0.3, 0.3);
-        HPDF_Page_Rectangle(currentPage, 0, 0, HPDF_Page_GetWidth(currentPage), HPDF_Page_GetHeight(currentPage));
-        HPDF_Page_Fill(currentPage);
-        HPDF_Page_SetRGBStroke(currentPage, 0.8, 0.8, 0.8);
-        HPDF_Page_SetRGBFill(currentPage, 0.8, 0.8, 0.8);
-        textBoundaryWidth = HPDF_Page_GetWidth(currentPage)-textBoundaryOffset*2;
+        HPDF::Page &page = _doc.addPage(HPDF_PAGE_SIZE_A4, HPDF_PAGE_LANDSCAPE);
+        page.fillWithColour(bgColour, [](HPDF::DrawContext &ctx) {
+            ctx.rectangle(0, 0, ctx.width(), ctx.height());
+        });
+
         textYPosition = 25;
+        _pageCount++;
     }
 
-    HPDF_Doc pdf;
-    HPDF_Page currentPage;
-    HPDF_Font helvetica;
+    HPDF::Document _doc;
+    HPDF::Font _font;
+    uint32_t _pageCount{0};
 
-    HPDF_REAL textBoundaryWidth;
-    HPDF_REAL textBoundaryOffset { 100 };
-    HPDF_REAL textYPosition { 125 };
+    uint32_t textBoundaryOffset{100};
+    uint32_t textYPosition{25};
 
-    int sizes[4] { 48, 36, 24, 18 };
-    int margins[4] { 56, 48, 36, 24 };
+    HPDF::Colour textColour{0xbbbbbb_rgb};
+    HPDF::Colour bgColour{0x444444_rgb};
+
+    int sizes[4]{48, 36, 24, 18};
+    int margins[4]{56, 48, 36, 24};
 };
 
-std::string readFile(char *filename)
-{
+std::string readFile(char *filename) {
     std::ifstream file(filename);
     file.unsetf(std::ios_base::skipws);
     return std::string(std::istream_iterator<char>(file), std::istream_iterator<char>());
@@ -138,20 +110,6 @@ int main(int argc, char **argv) {
     presentationRenderer.render(presentation);
 
     renderer.writeToFile(argv[2]);
-    
-    HPDF::Document document;
-    HPDF::Page page = document.addPage(HPDF_PAGE_SIZE_A4, HPDF_PAGE_LANDSCAPE);
-
-    page.fillWithColour(0xcccccc_rgb, [](HPDF::DrawContext &ctx) {
-        ctx.rectangle(0, 0, ctx.width(), ctx.height());
-    });
-
-    page.strokeWithColour(0x000000_rgb, [](HPDF::DrawContext &ctx) {
-        ctx.rectangle(20, 20, 50, 50);
-        ctx.circle(50, 50, 25.f);
-    });
-
-    document.writeToFile("test2.pdf");
 
     return 0;
 }
